@@ -37,21 +37,24 @@
     <aside class="h-screen w-64 fixed left-0 top-0 flex flex-col bg-stone-900 border-none z-50">
         <div class="px-6 py-8 flex flex-col items-start gap-2">
             <img src="{{ asset('storyfast-wordmark.svg') }}" alt="StoryFast" class="h-6 brightness-0 invert">
-            <span class="block text-[10px] font-bold text-stone-500 uppercase tracking-widest">Admin Console</span>
+            <span class="block text-[10px] font-bold text-stone-500 uppercase tracking-widest">{{ auth()->user()->role === 'admin' ? 'Admin Console' : 'Author Dashboard' }}</span>
         </div>
         <nav class="flex flex-col h-full flex-1 overflow-y-auto">
+            @if(auth()->user()->role === 'admin')
             <a class="text-stone-400 hover:text-white py-3 px-6 flex items-center gap-3 transition-colors font-headline uppercase tracking-wider text-xs font-bold hover:bg-stone-800 transition-all duration-200" href="#">
                 <span class="material-symbols-outlined" style="font-size: 20px;">dashboard</span>
                 Dashboard
             </a>
-            <a class="{{ request()->is('admin/pending') ? 'bg-stone-800 text-white border-l-4 border-[#a53600]' : 'text-stone-400 hover:text-white hover:bg-stone-800' }} py-3 px-6 flex items-center gap-3 transition-colors font-headline uppercase tracking-wider text-xs font-bold transition-all duration-200" href="{{ url('admin/pending') }}">
+            <a class="{{ request()->is('admin/pending') ? 'bg-stone-800 text-white border-l-4 border-[#a53600]' : 'text-stone-400 hover:text-white hover:bg-stone-800' }} py-3 px-6 flex items-center gap-3 font-headline uppercase tracking-wider text-xs font-bold transition-all duration-200" href="{{ url('admin/pending') }}">
                 <span class="material-symbols-outlined" style="font-size: 20px;">pending_actions</span>
                 Pending Stories
             </a>
-            <a class="{{ request()->is('admin/stories') ? 'bg-stone-800 text-white border-l-4 border-[#a53600]' : 'text-stone-400 hover:text-white hover:bg-stone-800' }} py-3 px-6 flex items-center gap-3 font-headline uppercase tracking-wider text-xs font-bold transition-all duration-200" href="{{ url('admin/stories') }}">
+            @endif
+            <a class="{{ request()->is('admin/stories*') ? 'bg-stone-800 text-white border-l-4 border-[#a53600]' : 'text-stone-400 hover:text-white hover:bg-stone-800' }} py-3 px-6 flex items-center gap-3 font-headline uppercase tracking-wider text-xs font-bold transition-all duration-200" href="{{ url('admin/stories') }}">
                 <span class="material-symbols-outlined" style="font-size: 20px;">auto_stories</span>
-                Manage Stories
+                {{ auth()->user()->role === 'admin' ? 'Manage Stories' : 'My Stories' }}
             </a>
+            @if(auth()->user()->role === 'admin')
             <a class="{{ request()->is('admin/users') ? 'bg-stone-800 text-white border-l-4 border-[#a53600]' : 'text-stone-400 hover:text-white hover:bg-stone-800' }} py-3 px-6 flex items-center gap-3 font-headline uppercase tracking-wider text-xs font-bold transition-all duration-200" href="{{ url('admin/users') }}">
                 <span class="material-symbols-outlined" style="font-size: 20px;">group</span>
                 Manage Users
@@ -60,10 +63,11 @@
                 <span class="material-symbols-outlined" style="font-size: 20px;">category</span>
                 Categories
             </a>
-            <a class="text-stone-400 hover:text-white py-3 px-6 flex items-center gap-3 transition-colors font-headline uppercase tracking-wider text-xs font-bold hover:bg-stone-800 transition-all duration-200" href="#">
+            <a class="text-stone-400 hover:text-white py-3 px-6 flex items-center gap-3 font-headline uppercase tracking-wider text-xs font-bold hover:bg-stone-800 transition-all duration-200" href="#">
                 <span class="material-symbols-outlined" style="font-size: 20px;">analytics</span>
                 Statistics
             </a>
+            @endif
         </nav>
     </aside>
 
@@ -72,7 +76,7 @@
         <!-- TopAppBar -->
         <header class="flex justify-end items-center px-8 sticky top-0 z-40 h-16 bg-[#f6f3f2] dark:bg-stone-900 border-none transition-all">
             <div class="flex items-center gap-6">
-                <span class="text-xs font-bold font-headline uppercase tracking-widest text-[#a53600]">Admin Console</span>
+                <span class="text-xs font-bold font-headline uppercase tracking-widest text-[#a53600]">{{ auth()->user()->role === 'admin' ? 'Admin Console' : 'Author Dashboard' }}</span>
                 <div class="flex items-center gap-2">
                     <button class="p-2 text-stone-500 hover:bg-stone-200 dark:hover:bg-stone-800 rounded-full transition-all flex items-center">
                         <span class="material-symbols-outlined">notifications_none</span>
@@ -88,7 +92,7 @@
                             <img alt="Admin Avatar" class="w-full h-full object-cover" src="{{ auth()->check() && auth()->user()->avatar ? auth()->user()->avatar : 'https://ui-avatars.com/api/?name='.urlencode(auth()->check() ? auth()->user()->name : 'Admin') }}"/>
                         </div>
                         <div class="hidden md:block">
-                            <p class="text-xs font-bold font-headline text-stone-800">{{ auth()->check() ? auth()->user()->name : 'Admin' }}</p>
+                            <p class="text-xs font-bold font-headline text-stone-800">{{ auth()->check() ? auth()->user()->name : 'User' }}</p>
                         </div>
                     </div>
                     <form method="POST" action="{{ route('logout') }}">

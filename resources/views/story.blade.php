@@ -9,60 +9,121 @@
         <!-- Left Column: Cover & Main Actions -->
         <div class="w-full md:w-[240px] shrink-0">
             <div class="aspect-[3/4] w-full bg-surface-container overflow-hidden rounded-lg">
-                <img class="w-full h-full object-cover" alt="Atmospheric book cover featuring a lone figure walking through a misty pine forest at dusk, cinematic moody lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjj3ESJJyYEq0XpVCBmoeqzDKPVW4PTByuOvwhu8aYQPSGuvXLzrmS5p-rMICeEqMvb5esfBXFvRY3viAwuvm7i0vi56igk5M0emIE3U2cws6ZwI61js8RoXeRWoJ62Rymo6gSD3A7qvwMBpfp-wNmYX8aesmNMJ_uBfzJApnUm9L4xaTV0oOKlCznezDW9v3IObnOdgOi5_xtQTq7ZoFBSweYb8XN6erCBHPhpL48-8GcxYWC51Rrh1bQpRfKDSM71LVpzMBt9fRC"/>
+                @if($story->cover_image)
+                <img class="w-full h-full object-cover" alt="{{ $story->title }} Cover" src="{{ Storage::url($story->cover_image) }}" />
+                @else
+                <div class="w-full h-full object-cover bg-stone-200 flex items-center justify-center text-stone-400">No Cover</div>
+                @endif
             </div>
             <div class="mt-8 flex flex-col gap-3">
-                <button onclick="window.location.href='{{ url('/reading') }}'" class="w-full py-4 bg-on-surface text-surface text-sm font-bold tracking-wide uppercase rounded-[6px] hover:bg-[#111] active:scale-[0.98] transition-all duration-300 border border-transparent">
-                    Read from Beginning
+                @if($story->chapters->count() > 0)
+                <a href="{{ route('reading.show', ['id_or_slug' => $story->slug, 'order_index' => $story->chapters->first()->order_index]) }}" class="w-full py-4 bg-on-surface text-surface text-[12px] font-bold tracking-widest text-center uppercase rounded-[6px] hover:bg-[#111] active:scale-[0.98] transition-all duration-300 border border-transparent block">
+                    Read First Chapter
+                </a>
+                <a href="{{ route('reading.show', ['id_or_slug' => $story->slug, 'order_index' => $story->chapters->last()->order_index]) }}" class="w-full py-4 bg-surface-container-lowest border border-outline-variant/30 text-on-surface text-[12px] font-bold text-center tracking-widest uppercase rounded-[6px] hover:bg-surface-container-low active:scale-[0.98] transition-all duration-300 block">
+                    Latest Chapter
+                </a>
+                @else
+                <button disabled="disabled" class="w-full py-4 bg-stone-100 text-stone-400 text-sm font-bold tracking-widest uppercase rounded-[6px] cursor-not-allowed border border-transparent block">
+                    No Chapters Yet
                 </button>
-                <button onclick="window.location.href='{{ url('/reading') }}'" class="w-full py-4 bg-surface-container-lowest border border-outline-variant/30 text-on-surface text-sm font-bold tracking-wide uppercase rounded-[6px] hover:bg-surface-container-low active:scale-[0.98] transition-all duration-300">
-                    Continue Reading
-                </button>
+                @endif
             </div>
         </div>
         <!-- Right Column: Story Metadata & Actions -->
         <div class="flex-1 flex flex-col">
             <div class="mb-2">
-                <h1 class="text-4xl md:text-5xl font-black font-headline text-on-surface tracking-tighter mb-4 leading-tight uppercase">The Last Manuscript of Memory</h1>
+                <h1 class="text-4xl md:text-5xl font-black font-headline text-on-surface tracking-tighter mb-4 leading-tight uppercase">{{ $story->title }}</h1>
                 <div class="flex items-center gap-2 mb-6">
                     <span class="text-secondary text-sm font-medium">Author:</span>
-                    <a class="text-primary font-semibold text-sm hover:underline" href="#">Han Mac Vu</a>
+                    <span class="text-primary font-semibold text-sm">{{ $story->author }}</span>
                 </div>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-y-6 gap-x-8 mb-8 border-y border-outline-variant/15 py-6">
                 <div>
                     <div class="text-[11px] uppercase tracking-widest text-secondary mb-1">Genre</div>
-                    <div class="text-sm font-semibold text-on-surface">Drama, Fantasy</div>
+                    <div class="text-sm font-semibold text-on-surface">
+                        {{ $story->categories->pluck('name')->join(', ') ?: 'Uncategorized' }}
+                    </div>
                 </div>
                 <div>
                     <div class="text-[11px] uppercase tracking-widest text-secondary mb-1">Status</div>
-                    <div class="text-sm font-semibold text-primary">Ongoing</div>
+                    <div class="text-sm font-semibold text-primary capitalize">{{ $story->status }}</div>
                 </div>
                 <div>
                     <div class="text-[11px] uppercase tracking-widest text-secondary mb-1">Chapters</div>
-                    <div class="text-sm font-semibold text-on-surface">1,240</div>
+                    <div class="text-sm font-semibold text-on-surface">{{ number_format($story->chapters->count()) }}</div>
                 </div>
                 <div>
                     <div class="text-[11px] uppercase tracking-widest text-secondary mb-1">Reads</div>
-                    <div class="text-sm font-semibold text-on-surface">45.2K</div>
+                    <div class="text-sm font-semibold text-on-surface">{{ number_format($story->views) }}</div>
                 </div>
             </div>
             <div class="flex items-center gap-4 mb-8">
                 <div class="flex text-primary">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
-                    <span class="material-symbols-outlined">star</span>
+                    @php
+                        $score = $story->rating_score ?? 0;
+                        $fullStars = floor($score);
+                        $hasHalfStar = ($score - $fullStars) >= 0.5;
+                        $emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0);
+                    @endphp
+                    @for($i = 0; $i < $fullStars; $i++)
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+                    @endfor
+                    @if($hasHalfStar)
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star_half</span>
+                    @endif
+                    @for($i = 0; $i < $emptyStars; $i++)
+                        <span class="material-symbols-outlined">star</span>
+                    @endfor
                 </div>
-                <span class="text-lg font-bold text-on-surface">4.8</span>
-                <span class="text-secondary text-sm">(1,248 ratings)</span>
+                <span class="text-lg font-bold text-on-surface">{{ number_format($story->rating_score ?? 0, 1) }}</span>
+                <span class="text-secondary text-sm">({{ number_format($story->rating_count ?? 0) }} ratings)</span>
             </div>
             <div class="mb-10 max-w-[720px]">
-                <p class="text-secondary leading-[1.9] font-body text-base line-clamp-5">
-                    In the heart of the mist-shrouded city, where secrets are sealed within ancient manuscripts, a young writer stumbles upon a terrifying truth about his lineage. Every word written seems to dictate the future of reality. Can he change his own conclusion, or will he become another victim in fate's narrative? A dramatic journey between the boundaries of reality and illusion, where silence holds destructive power.
-                </p>
+                <div class="relative">
+                    <p id="storyDescription" class="text-secondary leading-[1.9] font-body text-base line-clamp-4 transition-all duration-300 overflow-hidden">
+                        {!! nl2br(e($story->description)) !!}
+                    </p>
+                    <div id="descOverlay" class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-surface to-transparent pointer-events-none"></div>
+                </div>
+                <button id="btnReadMore" onclick="toggleDescription()" class="mt-2 text-primary text-[11px] font-bold tracking-widest uppercase hover:underline flex items-center gap-1 group hidden">
+                    <span id="readMoreText">Read More</span>
+                </button>
             </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    requestAnimationFrame(() => {
+                        const desc = document.getElementById('storyDescription');
+                        const btn = document.getElementById('btnReadMore');
+                        const overlay = document.getElementById('descOverlay');
+
+                        // Check if text is truncated
+                        if (desc.scrollHeight > desc.clientHeight) {
+                            btn.classList.remove('hidden');
+                        } else {
+                            overlay.classList.add('hidden');
+                        }
+                    });
+                });
+
+                function toggleDescription() {
+                    const desc = document.getElementById('storyDescription');
+                    const btnText = document.getElementById('readMoreText');
+                    const overlay = document.getElementById('descOverlay');
+
+                    desc.classList.toggle('line-clamp-4');
+
+                    if (desc.classList.contains('line-clamp-4')) {
+                        if (btnText) btnText.innerText = 'Read More';
+                        if (overlay) overlay.classList.remove('hidden');
+                    } else {
+                        if (btnText) btnText.innerText = 'Show Less';
+                        if (overlay) overlay.classList.add('hidden');
+                    }
+                }
+            </script>
             <div class="mt-auto flex flex-wrap gap-4">
                 <button class="flex items-center gap-2 px-6 py-3 bg-surface-container-low text-on-surface rounded-full text-sm font-semibold hover:bg-surface-container-high border border-outline-variant/10 transition-colors">
                     <span class="material-symbols-outlined text-xl">auto_stories</span>
@@ -81,54 +142,66 @@
     </section>
 
     <!-- Chapter List Section -->
-    <section class="mb-24 bg-surface-container-low p-8 md:p-12 rounded-[6px]">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
-            <h2 class="text-2xl font-black font-headline tracking-tighter text-on-surface uppercase">Chapter List</h2>
-            <div class="flex items-center gap-4 w-full md:w-auto">
-                <div class="relative flex-1 md:w-64">
-                    <input class="w-full bg-surface-container-lowest border-none border-b border-outline-variant/30 focus:ring-0 focus:border-primary text-sm px-4 py-2 rounded-t placeholder:text-secondary/60" placeholder="Search chapters..." type="text"/>
+    <!-- Chapter List Section -->
+    <section class="max-w-[1024px] mx-auto mb-24 relative px-6 md:px-0">
+        <div class="bg-surface border border-outline-variant/20 rounded-[6px] shadow-sm flex flex-col max-h-[600px]">
+
+            <!-- Search Header -->
+            <form action="{{ url()->current() }}" method="GET" class="px-6 pt-6 pb-4 shrink-0 rounded-t-[6px] bg-surface m-0 border-b border-outline-variant/10" id="chapterSearchForm">
+                <div class="relative w-full text-secondary focus-within:text-on-surface transition-colors">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[20px] pointer-events-none">search</span>
+                    <input name="cq" value="{{ request('cq') }}" class="w-full bg-surface-container-lowest border border-outline-variant/40 hover:border-outline-variant/80 focus:outline-none focus:ring-0 focus:border-outline-variant/80 text-sm font-headline placeholder:text-secondary/60 py-3 pl-12 pr-4 text-on-surface transition-all rounded-[6px] shadow-sm" placeholder="Tìm theo số chương hoặc tên chương" type="text" onchange="document.getElementById('chapterSearchForm').submit()" />
                 </div>
-                <button class="material-symbols-outlined text-secondary hover:text-primary transition-colors">sort</button>
+            </form>
+
+            <!-- List Body -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-2 relative" style="scrollbar-width: thin;">
+                @forelse($chapters as $chapter)
+                <a href="{{ route('reading.show', ['id_or_slug' => $story->slug, 'order_index' => $chapter->order_index]) }}" class="flex items-center gap-5 w-full bg-surface-container-lowest px-4 py-3 hover:bg-surface-container-low transition-colors border border-outline-variant/10 rounded-[4px]">
+                    <span class="w-8 h-8 flex items-center justify-center shrink-0 bg-surface border border-outline-variant/20 text-on-surface font-headline font-bold text-xs">{{ $chapter->order_index }}</span>
+                    <span class="text-sm font-headline font-semibold text-on-surface line-clamp-1 flex-1">{{ $chapter->title }}</span>
+                </a>
+                @empty
+                <div class="text-center py-12 text-sm text-secondary font-body">Không có chương nào.</div>
+                @endforelse
             </div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-4">
-            <!-- Chapter items -->
-            <a class="flex items-center justify-between group py-3 border-b border-outline-variant/10" href="{{ url('/reading') }}">
-                <span class="text-sm font-medium text-secondary group-hover:text-primary transition-colors">Chapter 1,240: The Final Silence</span>
-                <span class="w-2 h-2 bg-primary rounded-full"></span>
-            </a>
-            <a class="flex items-center justify-between group py-3 border-b border-outline-variant/10" href="{{ url('/reading') }}">
-                <span class="text-sm font-medium text-secondary group-hover:text-primary transition-colors">Chapter 1,239: Footsteps in the Dark</span>
-                <span class="w-2 h-2 bg-primary rounded-full"></span>
-            </a>
-            <a class="flex items-center justify-between group py-3 border-b border-outline-variant/10" href="{{ url('/reading') }}">
-                <span class="text-sm font-medium text-secondary group-hover:text-primary transition-colors">Chapter 1,238: The Library's Secret</span>
-                <span class="w-2 h-2 bg-primary rounded-full"></span>
-            </a>
-            <!-- Repeating for layout demonstration -->
-            <a class="flex items-center group py-3 border-b border-outline-variant/10" href="{{ url('/reading') }}">
-                <span class="text-sm font-medium text-secondary group-hover:text-primary transition-colors">Chapter 1,237: The Rose's Curse</span>
-            </a>
-            <a class="flex items-center group py-3 border-b border-outline-variant/10" href="{{ url('/reading') }}">
-                <span class="text-sm font-medium text-secondary group-hover:text-primary transition-colors">Chapter 1,236: Shattered Memories</span>
-            </a>
-            <a class="flex items-center group py-3 border-b border-outline-variant/10" href="{{ url('/reading') }}">
-                <span class="text-sm font-medium text-secondary group-hover:text-primary transition-colors">Chapter 1,235: The Winding Path</span>
-            </a>
-            <a class="flex items-center group py-3 border-b border-outline-variant/10" href="{{ url('/reading') }}">
-                <span class="text-sm font-medium text-secondary group-hover:text-primary transition-colors">Chapter 1,234: A Glimmer of Light</span>
-            </a>
-            <a class="flex items-center group py-3 border-b border-outline-variant/10" href="{{ url('/reading') }}">
-                <span class="text-sm font-medium text-secondary group-hover:text-primary transition-colors">Chapter 1,233: Breath of the Night</span>
-            </a>
-            <a class="flex items-center group py-3 border-b border-outline-variant/10" href="{{ url('/reading') }}">
-                <span class="text-sm font-medium text-secondary group-hover:text-primary transition-colors">Chapter 1,232: Sad Melody</span>
-            </a>
-        </div>
-        <div class="mt-12 text-center">
-            <button class="text-primary text-sm font-bold uppercase tracking-widest hover:text-on-surface transition-colors flex items-center gap-2 mx-auto">
-                View all chapters <span class="material-symbols-outlined text-[16px]">arrow_downward</span>
-            </button>
+
+            <!-- Pagination -->
+            <div class="border-t border-outline-variant/20 bg-surface-container-lowest px-4 py-4 flex justify-center rounded-b-[6px] shrink-0">
+                @if($chapters->hasPages())
+                <div class="flex items-center gap-1.5 flex-wrap justify-center">
+                    @if(!$chapters->onFirstPage())
+                    <a href="{{ $chapters->url(1) }}" class="px-4 h-9 flex items-center justify-center bg-surface border border-outline-variant/20 text-secondary text-sm font-headline hover:bg-surface-container-high hover:text-on-surface transition-colors rounded-[4px]">Đầu</a>
+                    <a href="{{ $chapters->previousPageUrl() }}" class="w-9 h-9 flex items-center justify-center bg-surface border border-outline-variant/20 text-secondary text-sm font-headline hover:bg-surface-container-high hover:text-on-surface transition-colors rounded-[4px]">
+                        <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                    </a>
+                    @endif
+
+                    @php
+                    $start = max(1, $chapters->currentPage() - 2);
+                    $end = min($start + 4, $chapters->lastPage());
+                    if ($end - $start < 4) {
+                        $start=max(1, $end - 4);
+                        }
+                        @endphp
+                        @for($i=$start; $i <=$end; $i++)
+                        @if($i==$chapters->currentPage())
+                        <span class="w-9 h-9 flex items-center justify-center bg-primary text-on-primary text-sm font-headline font-bold rounded-[4px] border border-primary">{{ $i }}</span>
+                        @else
+                        <a href="{{ $chapters->url($i) }}" class="w-9 h-9 flex items-center justify-center bg-surface border border-outline-variant/20 text-secondary text-sm font-headline hover:bg-surface-container-high hover:text-on-surface transition-colors rounded-[4px]">{{ $i }}</a>
+                        @endif
+                        @endfor
+
+                        @if($chapters->hasMorePages())
+                        <a href="{{ $chapters->nextPageUrl() }}" class="w-9 h-9 flex items-center justify-center bg-surface border border-outline-variant/20 text-secondary text-sm font-headline hover:bg-surface-container-high hover:text-on-surface transition-colors rounded-[4px]">
+                            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                        </a>
+                        <a href="{{ $chapters->url($chapters->lastPage()) }}" class="px-4 h-9 flex items-center justify-center bg-surface border border-outline-variant/20 text-secondary text-sm font-headline hover:bg-surface-container-high hover:text-on-surface transition-colors rounded-[4px]">Cuối</a>
+                        @endif
+                </div>
+                @endif
+            </div>
+
         </div>
     </section>
 
@@ -142,7 +215,7 @@
         <!-- Comment Form -->
         <div class="flex gap-6 mb-16">
             <div class="w-12 h-12 rounded-full overflow-hidden shrink-0 bg-surface-container-high">
-                <img class="w-full h-full object-cover" alt="Close-up portrait of a modern minimalist profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEEnrusFhQts3d5B_03g8knguhzhJHitSiiHs9RVkGoi02RfO8trvWIB387lVM_kgQojEgEpXISdBeq85B-3w8RPjGaokBw010yvXi7YYkcddY9p7n34drIgCfvSvN0GyKgj2UYGrE7KCeFJuXOCuexZIe-gUbUk3l1i7ZLRbzV-wP_EnrqWUHVFOdSb1173PRtYfcO-pH5q3dW4Fmwrd5395-hOfp7t9gTS57GgMdV7qPTy3n9pMXU8_WIfGROr80WZ-5UAWj3_LU"/>
+                <img class="w-full h-full object-cover" alt="Close-up portrait of a modern minimalist profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEEnrusFhQts3d5B_03g8knguhzhJHitSiiHs9RVkGoi02RfO8trvWIB387lVM_kgQojEgEpXISdBeq85B-3w8RPjGaokBw010yvXi7YYkcddY9p7n34drIgCfvSvN0GyKgj2UYGrE7KCeFJuXOCuexZIe-gUbUk3l1i7ZLRbzV-wP_EnrqWUHVFOdSb1173PRtYfcO-pH5q3dW4Fmwrd5395-hOfp7t9gTS57GgMdV7qPTy3n9pMXU8_WIfGROr80WZ-5UAWj3_LU" />
             </div>
             <div class="flex-1">
                 <textarea class="w-full bg-surface-container-lowest border-none border-b border-outline-variant/30 focus:border-primary focus:ring-0 text-sm py-3 px-0 resize-none min-h-[100px] transition-all" placeholder="Share your thoughts about this story..."></textarea>
@@ -158,7 +231,7 @@
             <div class="space-y-8">
                 <div class="flex gap-6">
                     <div class="w-12 h-12 rounded-full overflow-hidden shrink-0 bg-surface-container-high">
-                        <img class="w-full h-full object-cover" alt="Portrait of a young woman with a thoughtful expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClmk3BdcwygfQGJqUXOrc3hEGW5A8iCqVbiV-veitEu-g3NMujTA1HPo1tC0CYdL3esx0BHnR2-R6Os78So9jhRxDMhr-_gLbZkve2Y2aM5ck3MaAJf2T7iZogk9529F0qbWxUtz17nPBxf-oKGdupvTG8GzrIQeOljs0CAOdQjHx_d0Wmn-EYFM0v4K41RMZf_Vd_eNehP4OCDsK3JLP6fIobKqHOR4bh7iB9y7l_CKasYz09bBbfmx8StuzC_Sns0UpsmWuc4wCQ"/>
+                        <img class="w-full h-full object-cover" alt="Portrait of a young woman with a thoughtful expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClmk3BdcwygfQGJqUXOrc3hEGW5A8iCqVbiV-veitEu-g3NMujTA1HPo1tC0CYdL3esx0BHnR2-R6Os78So9jhRxDMhr-_gLbZkve2Y2aM5ck3MaAJf2T7iZogk9529F0qbWxUtz17nPBxf-oKGdupvTG8GzrIQeOljs0CAOdQjHx_d0Wmn-EYFM0v4K41RMZf_Vd_eNehP4OCDsK3JLP6fIobKqHOR4bh7iB9y7l_CKasYz09bBbfmx8StuzC_Sns0UpsmWuc4wCQ" />
                     </div>
                     <div class="flex-1">
                         <div class="flex items-center gap-3 mb-1">
@@ -179,7 +252,7 @@
                 <div class="ml-[60px] md:ml-[40px] border-l-2 border-outline-variant/20 pl-6">
                     <div class="flex gap-6">
                         <div class="w-10 h-10 rounded-full overflow-hidden shrink-0 bg-surface-container-high">
-                            <img class="w-full h-full object-cover" alt="Man with glasses in creative setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxBDZXnw9qWrVKOSwVWRqj67luxzFNTFTVV88AmcMnWAH0gcNxVjTIgnrCP34IPqikdJVejfTJMtq-jzxXD127ZG4iSNf9OmoP8RHwoSi2M5tbv4rKfc7JQwbhtBkHAgIBY9n-Jv_XxbiHJwJbdmGBzuRJntu062dsJV6-Sw7c_d51btnuDBMIdx4NCYhd60H8aKhg135yGvLuLmDktSBRURVh3l5zqCH0ZTo9EGlwgWfz5nXqZZMyRa25jjfY-GyqCF74pocSvC6C"/>
+                            <img class="w-full h-full object-cover" alt="Man with glasses in creative setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxBDZXnw9qWrVKOSwVWRqj67luxzFNTFTVV88AmcMnWAH0gcNxVjTIgnrCP34IPqikdJVejfTJMtq-jzxXD127ZG4iSNf9OmoP8RHwoSi2M5tbv4rKfc7JQwbhtBkHAgIBY9n-Jv_XxbiHJwJbdmGBzuRJntu062dsJV6-Sw7c_d51btnuDBMIdx4NCYhd60H8aKhg135yGvLuLmDktSBRURVh3l5zqCH0ZTo9EGlwgWfz5nXqZZMyRa25jjfY-GyqCF74pocSvC6C" />
                         </div>
                         <div class="flex-1">
                             <div class="flex items-center gap-3 mb-1">
@@ -201,7 +274,7 @@
             <!-- Another Parent Comment -->
             <div class="flex gap-6">
                 <div class="w-12 h-12 rounded-full overflow-hidden shrink-0 bg-surface-container-high">
-                    <img class="w-full h-full object-cover" alt="Aesthetic profile photo of an artist" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkcJ-bRzdTIU1MeABycIs_32Mk8m5kl0hocXIj-l80vrFQxJTAC1FVJZmLOgqqu0BYcrNi4qNycjaMW8IO1qeAUSaZ4Iy14M-2Zzp1fq6t1aMeAjEnuV6uIkroyKm0iJXc9rLEVZeCqv5G3XCQfU0sU15R1h63oMH6s87MKXn0VrputkVXqKaRislsjVFd99Iq1fwIq80axY4lD0wglm0FYXfBKzXh03yJDG6xPXz2qLS8iGwxPiK9H3KATTtCjs7M6_Ycv7iK8Hts"/>
+                    <img class="w-full h-full object-cover" alt="Aesthetic profile photo of an artist" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkcJ-bRzdTIU1MeABycIs_32Mk8m5kl0hocXIj-l80vrFQxJTAC1FVJZmLOgqqu0BYcrNi4qNycjaMW8IO1qeAUSaZ4Iy14M-2Zzp1fq6t1aMeAjEnuV6uIkroyKm0iJXc9rLEVZeCqv5G3XCQfU0sU15R1h63oMH6s87MKXn0VrputkVXqKaRislsjVFd99Iq1fwIq80axY4lD0wglm0FYXfBKzXh03yJDG6xPXz2qLS8iGwxPiK9H3KATTtCjs7M6_Ycv7iK8Hts" />
                 </div>
                 <div class="flex-1">
                     <div class="flex items-center gap-3 mb-1">

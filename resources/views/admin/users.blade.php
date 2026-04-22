@@ -5,7 +5,7 @@
 @section('content')
 <div class="flex justify-between items-center mb-6">
     <div>
-        <h1 class="font-headline font-black text-4xl tracking-tighter text-on-surface">Manage Users</h1>
+        <h1 class="font-headline font-black text-3xl tracking-tighter text-on-surface">Manage Users</h1>
     </div>
     <div class="flex gap-4 items-center">
         <div class="relative group w-64">
@@ -21,7 +21,14 @@
     <div class="col-span-8 bg-stone-100 p-1 rounded-lg flex items-center gap-1">
         <a href="{{ route('admin.users.index') }}" class="{{ !request('role') && !request('status') ? 'bg-white text-primary font-bold shadow-sm' : 'text-secondary hover:text-on-surface' }} px-6 py-2 rounded text-sm transition-colors">All Users</a>
         <a href="{{ route('admin.users.index', ['role' => 'author']) }}" class="{{ request('role') === 'author' ? 'bg-white text-primary font-bold shadow-sm' : 'text-secondary hover:text-on-surface' }} px-6 py-2 rounded text-sm transition-colors">Authors</a>
-        <a href="{{ route('admin.users.index', ['role' => 'reader']) }}" class="{{ request('role') === 'reader' ? 'bg-white text-primary font-bold shadow-sm' : 'text-secondary hover:text-on-surface' }} px-6 py-2 rounded text-sm transition-colors">Readers</a>
+        <a href="{{ route('admin.users.index', ['role' => 'reader']) }}" class="{{ request('role') === 'reader' && !request('requested') ? 'bg-white text-primary font-bold shadow-sm' : 'text-secondary hover:text-on-surface' }} px-6 py-2 rounded text-sm transition-colors">Readers</a>
+        <a href="{{ route('admin.users.index', ['requested' => '1']) }}" class="{{ request('requested') === '1' ? 'bg-white text-[#a53600] font-bold shadow-sm' : 'text-secondary hover:text-[#a53600]' }} px-6 py-2 rounded text-sm transition-colors flex items-center gap-1">
+            Requests
+            @php $pendingCount = \App\Models\User::where('is_author_requested', true)->count(); @endphp
+            @if($pendingCount > 0)
+                <span class="w-4 h-4 bg-[#a53600] text-white text-[10px] flex items-center justify-center rounded-full ml-1">{{ $pendingCount }}</span>
+            @endif
+        </a>
         <a href="{{ route('admin.users.index', ['status' => 'suspended']) }}" class="{{ request('status') === 'suspended' ? 'bg-white text-primary font-bold shadow-sm' : 'text-secondary hover:text-on-surface' }} px-6 py-2 rounded text-sm transition-colors">Suspended</a>
     </div>
     <div class="col-span-4 bg-white border border-stone-200 flex items-center px-4 rounded shadow-sm py-1.5 transition-colors relative group focus-within:ring-1 focus-within:ring-primary focus-within:border-primary">
@@ -78,14 +85,16 @@
                             @if($user->role === 'admin')
                                 <span class="text-[9px] appearance-none font-black uppercase tracking-widest px-3 py-1 bg-red-50 text-error border-red-100 rounded-full border text-center">ADMIN</span>
                             @else
-                                <form method="POST" action="{{ route('admin.users.updateRole', $user) }}">
+                                <form method="POST" action="{{ route('admin.users.updateRole', $user) }}" class="inline-block relative">
                                     @csrf
                                     @method('PATCH')
                                     <select name="role" onchange="this.form.submit()" class="text-[9px] pl-3 pr-2 appearance-none cursor-pointer outline-none font-black uppercase tracking-widest py-0.5 bg-stone-100 text-stone-600 border-stone-200 rounded-full border text-center text-center-last">
                                         <option value="reader" {{ $user->role === 'reader' ? 'selected' : '' }}>READER</option>
                                         <option value="author" {{ $user->role === 'author' ? 'selected' : '' }}>AUTHOR</option>
-                                        <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>ADMIN</option>
                                     </select>
+                                    @if($user->is_author_requested)
+                                    <span class="absolute -top-2 -right-2 bg-[#a53600] text-white text-[8px] uppercase font-black px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap animate-pulse">Requesting</span>
+                                    @endif
                                 </form>
                             @endif
                         </td>
@@ -103,6 +112,15 @@
                         <button class="p-1.5 hover:bg-stone-200 rounded transition-all text-secondary" title="Manage">
                             <span class="material-symbols-outlined text-[16px]" data-icon="settings_account_box">settings_account_box</span>
                         </button>
+                        @if($user->is_author_requested)
+                        <form method="POST" action="{{ route('admin.users.rejectRequest', $user) }}" class="inline m-0 p-0">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit" class="p-1.5 rounded transition-all hover:bg-orange-50 text-orange-600" title="Reject Author Request">
+                                <span class="material-symbols-outlined text-[16px]">person_off</span>
+                            </button>
+                        </form>
+                        @endif
                         @if($user->role !== 'admin')
                         <form method="POST" action="{{ route('admin.users.updateStatus', $user) }}" class="inline m-0 p-0">
                             @csrf

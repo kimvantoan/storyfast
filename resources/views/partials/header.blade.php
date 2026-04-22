@@ -1,12 +1,12 @@
 <nav class="sticky top-0 w-full z-50 bg-[#fcf9f8]/80 dark:bg-[#1c1b1b]/80 backdrop-blur-xl no-border tonal-shift bg-[#f6f3f2] dark:bg-[#2a2827] flat no shadows">
-    <div class="flex justify-between items-center max-w-[1440px] mx-auto px-12 py-6">
+    <div class="flex justify-between items-center max-w-[1440px] mx-auto px-4 md:px-12 py-2 md:py-3 relative">
         <a href="{{ url('/') }}" class="flex items-center">
             <img src="{{ asset('storyfast-wordmark.svg') }}" alt="StoryFast" class="h-7 w-auto">
         </a>
         <div class="hidden md:flex items-center space-x-10 font-['Inter'] font-medium text-sm tracking-tight leading-relaxed">
             <!-- Categories Dropdown Group -->
-            <div class="relative group py-4">
-                <a class="text-[#a53600] dark:text-[#cc490e] font-bold border-b-2 border-[#a53600] pb-1 active:scale-[0.98] transition-all duration-200 cursor-pointer flex items-center gap-0.5">
+            <div class="relative group py-2">
+                <a class="{{ request()->routeIs('category.show') || request()->is('category/*') ? 'text-[#a53600] dark:text-[#cc490e] font-bold border-b-2 border-[#a53600] pb-1' : 'text-[#5e5e5e] dark:text-[#a19f9e] hover:text-[#a53600] dark:hover:text-[#cc490e]' }} active:scale-[0.98] transition-all duration-200 cursor-pointer flex items-center gap-0.5">
                     Categories
                     <span class="material-symbols-outlined !text-[16px] group-hover:rotate-180 transition-transform duration-300">expand_more</span>
                 </a>
@@ -25,30 +25,107 @@
                 </div>
             </div>
 
-            <a class="text-[#5e5e5e] dark:text-[#a19f9e] hover:text-[#a53600] dark:hover:text-[#cc490e] transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.98]" href="#">Rankings</a>
-            <a class="text-[#5e5e5e] dark:text-[#a19f9e] hover:text-[#a53600] dark:hover:text-[#cc490e] transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.98]" href="#">Updates</a>
-            <a class="text-[#5e5e5e] dark:text-[#a19f9e] hover:text-[#a53600] dark:hover:text-[#cc490e] transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.98]" href="#">Full Stories</a>
         </div>
-        <div class="flex items-center gap-6">
-            <span class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors" title="Search">search</span>
-            <a href="{{ url('/submit') }}" class="flex items-center text-secondary hover:text-primary transition-colors" title="Write a Story">
-                <span class="material-symbols-outlined">edit_square</span>
-            </a>
+        <div class="flex items-center gap-4 md:gap-6">
+            <!-- Desktop Search Input -->
+            <form action="{{ url('/search') }}" method="GET" class="relative hidden lg:block">
+                <input type="text" name="q" placeholder="Search stories..." class="bg-white dark:bg-[#1c1b1b] border border-stone-200 dark:border-stone-700 text-sm font-headline tracking-wider rounded-full py-2 px-4 pl-10 focus:outline-none focus:ring-1 focus:ring-[#a53600] focus:border-[#a53600] transition-all w-64 lg:w-80 shadow-sm text-stone-800 dark:text-stone-200 placeholder-stone-400">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-[18px] pointer-events-none">search</span>
+            </form>
+
+            <!-- Mobile Search Icon -->
+            <span class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors text-[20px] lg:hidden" title="Search">search</span>
+
             @guest
-            <button onclick="document.getElementById('loginModal').classList.remove('hidden')" class="bg-primary text-on-primary px-5 py-2 rounded-[6px] font-headline text-sm font-bold tracking-tight active:scale-[0.98] transition-all">Login</button>
+            <button onclick="document.getElementById('loginModal').classList.remove('hidden')" class="bg-primary text-on-primary px-4 py-1.5 md:px-5 md:py-2 rounded-[6px] font-headline text-xs md:text-sm font-bold tracking-tight active:scale-[0.98] transition-all">Login</button>
             @else
-            <div class="flex items-center gap-3 border-l border-stone-200 pl-6 ml-2">
-                <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name) }}" alt="{{ auth()->user()->name }}" class="w-8 h-8 rounded-[6px] border border-stone-200 object-cover">
-                <span class="text-sm font-bold font-headline text-[#1c1b1b] dark:text-[#fcf9f8]">{{ auth()->user()->name }}</span>
-                <form method="POST" action="{{ route('logout') }}" class="m-0 flex items-center">
-                    @csrf
-                    <button title="Log Out" type="submit" class="text-stone-400 hover:text-error transition-colors flex items-center">
-                        <span class="material-symbols-outlined text-[20px]">logout</span>
-                    </button>
-                </form>
+            <!-- User Account Dropdown Wrapper -->
+            <div class="relative flex items-center border-l border-stone-200 pl-4 md:pl-6 ml-1 md:ml-2">
+                <!-- Trigger Account Profile -->
+                <button onclick="document.getElementById('accountDropdown').classList.toggle('hidden'); document.getElementById('accountDropdownIcon').classList.toggle('rotate-180'); event.stopPropagation();" class="flex items-center gap-2 cursor-pointer py-1 focus:outline-none">
+                    <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name) }}" alt="{{ auth()->user()->name }}" class="w-8 h-8 rounded-[6px] border border-stone-200 object-cover">
+                    <span class="hidden md:inline text-sm font-bold font-headline text-[#1c1b1b] dark:text-[#fcf9f8]">{{ auth()->user()->name }}</span>
+                    <span id="accountDropdownIcon" class="material-symbols-outlined text-[16px] text-stone-400 transition-transform hidden md:inline tracking-tighter ml-1">expand_more</span>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div id="accountDropdown" class="hidden absolute top-[90%] md:top-full right-0 md:-right-2 z-[100] mt-1 pr-4 md:pr-0">
+                    <div class="w-56 bg-white dark:bg-[#1c1b1b] border border-stone-200 dark:border-stone-800 shadow-2xl rounded-xl overflow-hidden flex flex-col py-1">
+                        <!-- Role tag -->
+                        <div class="px-4 py-3 border-b border-stone-100 dark:border-stone-800">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-stone-400 dark:text-stone-500">Log in as</span>
+                            <div class="text-sm font-bold text-stone-800 dark:text-gray-200 capitalize mt-0.5">{{ auth()->user()->role }}</div>
+                        </div>
+
+                        <!-- Main Actions -->
+                        @if(in_array(auth()->user()->role, ['admin', 'author']))
+                        <a href="{{ url('/admin/stories') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-stone-700 dark:text-gray-300 hover:bg-stone-50 dark:hover:bg-stone-800 hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-[18px]">dashboard</span>
+                            Admin Dashboard
+                        </a>
+                        @elseif(auth()->user()->role === 'reader')
+                            @if(auth()->user()->is_author_requested)
+                            <div class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-stone-400 dark:text-stone-500 cursor-not-allowed cursor-help" title="Author Request Pending">
+                                <span class="material-symbols-outlined text-[18px]">pending</span>
+                                Pending Author
+                            </div>
+                            @else
+                            <form method="POST" action="{{ route('user.request_author') }}" class="m-0 border-b border-stone-100 dark:border-stone-800">
+                                @csrf
+                                <button type="submit" class="w-full text-left flex items-center gap-3 px-4 py-3 text-sm font-medium text-stone-700 dark:text-gray-300 hover:bg-stone-50 dark:hover:bg-stone-800 hover:text-primary transition-colors">
+                                    <span class="material-symbols-outlined text-[18px]">edit_document</span>
+                                    Become Author
+                                </button>
+                            </form>
+                            @endif
+                        @endif
+
+                        <div class="h-[1px] bg-stone-100 dark:bg-stone-800 w-full my-1"></div>
+
+                        <!-- Logout Action -->
+                        <form method="POST" action="{{ route('logout') }}" class="m-0">
+                            @csrf
+                            <button type="submit" class="w-full text-left flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-error hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
+                                <span class="material-symbols-outlined text-[18px]">logout</span>
+                                Log Out
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
             @endguest
+
+            <!-- Hamburger Button for Mobile -->
+            <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="md:hidden text-secondary ml-1 mt-1">
+                <span class="material-symbols-outlined text-[24px]">menu</span>
+            </button>
         </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="hidden md:hidden absolute top-full left-0 w-full bg-white dark:bg-[#1c1b1b] border-t border-stone-200 dark:border-stone-800 shadow-xl flex flex-col font-['Inter'] font-medium text-sm">
+        
+        <!-- Mobile Search Input -->
+        <div class="px-6 py-4 border-b border-stone-100 dark:border-stone-800">
+            <form action="{{ url('/search') }}" method="GET" class="relative w-full">
+                <input type="text" name="q" placeholder="Search stories..." class="w-full bg-stone-100 dark:bg-[#2a2827] border-none text-sm font-headline tracking-wider rounded-lg py-3 px-4 pl-11 focus:outline-none focus:ring-1 focus:ring-[#a53600] transition-all text-stone-800 dark:text-stone-200 placeholder-stone-500">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-stone-500 text-[20px] pointer-events-none">search</span>
+            </form>
+        </div>
+
+        @if(isset($globalCategories))
+            @foreach($globalCategories as $cat)
+            <a href="{{ route('category.show', $cat->slug) }}" class="px-6 py-4 border-b border-stone-100 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800">Category: {{ $cat->name }}</a>
+            @endforeach
+        @endif
+        
+        @auth
+            @if(in_array(auth()->user()->role, ['admin', 'author']))
+            <a href="{{ url('/admin/stories') }}" class="px-6 py-4 border-b border-stone-100 dark:border-stone-800 text-primary font-bold hover:bg-stone-50 dark:hover:bg-stone-800 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">dashboard</span> Admin Dashboard
+            </a>
+            @endif
+        @endauth
     </div>
 </nav>
 
@@ -85,6 +162,20 @@
                     </div>
                 </div>
             </div>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('click', function(event) {
+        var dropdown = document.getElementById('accountDropdown');
+        var icon = document.getElementById('accountDropdownIcon');
+        var button = dropdown ? dropdown.previousElementSibling : null;
+        
+        if (dropdown && !dropdown.classList.contains('hidden') && !dropdown.contains(event.target) && (!button || !button.contains(event.target))) {
+            dropdown.classList.add('hidden');
+            if(icon) icon.classList.remove('rotate-180');
+        }
+    });
+</script>

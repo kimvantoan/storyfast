@@ -1,172 +1,186 @@
 @extends('layouts.admin')
 
-@section('title', 'Pending Submissions')
+@section('title', 'Pending Approvals')
 
 @section('content')
-<div class="flex-1 flex flex-col -mt-4">
-<!-- Page Header -->
-<div class="mb-10 flex justify-between items-center">
-<div>
-<h3 class="text-4xl font-headline font-black tracking-tight text-on-surface">Pending Submissions</h3>
+
+@if(session('success'))
+<div id="toast-success" class="mb-6 p-4 bg-green-50 text-[#a53600] font-headline font-bold text-sm rounded shadow-sm border border-green-100 flex items-center gap-3 transition-opacity duration-500">
+    <span class="material-symbols-outlined">check_circle</span>
+    {{ session('success') }}
 </div>
-<div class="flex gap-4 items-center">
-<div class="relative group w-64">
-    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-[#a53600] transition-colors" style="font-size: 20px;">search</span>
-    <input type="text" placeholder="Search submissions..." class="w-full bg-white border border-stone-200 focus:border-[#a53600] focus:ring-1 focus:ring-[#a53600] rounded py-2 pl-10 pr-4 text-sm font-body transition-all outline-none text-stone-800 placeholder-stone-400 shadow-sm h-[44px]" />
+@endif
+
+<!-- Header Section -->
+<div class="mb-8 flex justify-between items-center">
+    <h1 class="text-3xl font-black font-headline tracking-tighter leading-none text-on-surface">Pending Approvals</h1>
 </div>
-<button class="px-4 h-[44px] bg-stone-100 text-xs font-bold font-headline rounded flex items-center gap-2 hover:bg-stone-200 transition-colors">
-<span class="text-secondary">Genre:</span>
-<span>All Genres</span>
-<span class="material-symbols-outlined text-[16px]" data-icon="expand_more">expand_more</span>
-</button>
-<button class="px-4 h-[44px] bg-stone-100 text-xs font-bold font-headline rounded flex items-center gap-2 hover:bg-stone-200 transition-colors">
-<span class="text-secondary">Sorted by:</span>
-<span>Newest First</span>
-<span class="material-symbols-outlined text-[16px]" data-icon="expand_more">expand_more</span>
-</button>
+
+<!-- Tabs -->
+<div class="flex gap-4 mb-4 border-b border-outline-variant/20">
+    <a href="{{ route('admin.pending.index') }}" class="px-6 py-3 font-headline font-bold text-sm uppercase tracking-widest transition-colors {{ $type === 'stories' ? 'border-b-2 border-primary text-primary' : 'text-secondary hover:text-on-surface' }}">
+        New Stories
+    </a>
+    <a href="{{ route('admin.pending.chapters.index') }}" class="px-6 py-3 font-headline font-bold text-sm uppercase tracking-widest transition-colors {{ $type === 'chapters' ? 'border-b-2 border-primary text-primary' : 'text-secondary hover:text-on-surface' }}">
+        New Chapters
+    </a>
 </div>
+
+<!-- Filter Bar Section -->
+<section class="bg-surface-container-low p-1 rounded-sm mb-8 flex flex-col md:flex-row gap-4 items-center">
+    <form action="{{ $type === 'chapters' ? route('admin.pending.chapters.index') : route('admin.pending.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-2 gap-2 w-full max-w-lg">
+        <!-- Search Field -->
+        <div class="relative group">
+            <input type="text" name="q" value="{{ request('q') }}" placeholder="SEARCH..." class="w-full bg-white border-none py-2 px-4 text-xs font-bold font-headline uppercase tracking-wider focus:ring-1 focus:ring-[#a53600] outline-none h-[40px]">
+            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-stone-400 text-sm">search</span>
+        </div>
+        <!-- CTA Filter Action -->
+        <button type="submit" class="bg-[#1c1b1b] text-white py-2 px-4 text-xs font-bold font-headline uppercase tracking-wider hover:bg-stone-800 transition-colors flex items-center justify-center gap-2 h-[40px]">
+            <span class="material-symbols-outlined text-sm">filter_alt</span>
+            Apply Filters
+        </button>
+    </form>
+</section>
+
+<!-- Table Section -->
+<div class="bg-white overflow-hidden shadow-sm">
+    <table class="w-full text-left border-collapse">
+        <thead>
+            <tr class="bg-stone-100">
+                @if($type === 'stories')
+                <th class="px-4 py-3 text-[10px] font-black font-headline uppercase tracking-[0.2em] text-secondary">Cover</th>
+                <th class="px-4 py-3 text-[10px] font-black font-headline uppercase tracking-[0.2em] text-secondary">Story Title</th>
+                <th class="px-4 py-3 text-[10px] font-black font-headline uppercase tracking-[0.2em] text-secondary">Author</th>
+                <th class="px-4 py-3 text-[10px] font-black font-headline uppercase tracking-[0.2em] text-secondary">Genre</th>
+                <th class="px-4 py-3 text-[10px] font-black font-headline uppercase tracking-[0.2em] text-secondary text-right">Actions</th>
+                @else
+                <th class="px-4 py-3 text-[10px] font-black font-headline uppercase tracking-[0.2em] text-secondary">Story Info</th>
+                <th class="px-4 py-3 text-[10px] font-black font-headline uppercase tracking-[0.2em] text-secondary">Chapter Info</th>
+                <th class="px-4 py-3 text-[10px] font-black font-headline uppercase tracking-[0.2em] text-secondary">Status</th>
+                <th class="px-4 py-3 text-[10px] font-black font-headline uppercase tracking-[0.2em] text-secondary text-right">Actions</th>
+                @endif
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-stone-100">
+            @if($type === 'stories')
+                @forelse($stories as $story)
+                <tr class="hover:bg-stone-50 transition-colors group">
+                    <td class="px-4 py-3">
+                        <div class="w-9 h-12 bg-stone-200 rounded-sm overflow-hidden flex-shrink-0">
+                            @if($story->cover_image)
+                            <img alt="Book Cover" class="w-full h-full object-cover" src="{{ Storage::url($story->cover_image) }}" />
+                            @else
+                            <div class="w-full h-full flex items-center justify-center text-stone-400 text-[9px]">No Cover</div>
+                            @endif
+                        </div>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="font-bold text-sm font-headline tracking-tight group-hover:text-primary transition-colors max-w-[200px] truncate">{{ $story->title }}</div>
+                        <div class="text-[10px] text-stone-400 font-label">ID: {{ str_pad($story->id, 4, '0', STR_PAD_LEFT) }}</div>
+                    </td>
+                    <td class="px-4 py-3 font-body text-xs max-w-[150px] truncate">{{ $story->author }}</td>
+                    <td class="px-4 py-3">
+                        <div class="flex flex-wrap gap-1 max-w-[150px]">
+                            @foreach($story->categories as $category)
+                            <span class="text-[9px] font-bold font-headline uppercase bg-stone-100 text-stone-600 px-2 py-1 rounded-sm">{{ $category->name }}</span>
+                            @endforeach
+                        </div>
+                    </td>
+                    <td class="px-4 py-3 text-right w-[200px]">
+                        <div class="flex justify-end gap-1 items-center">
+                            <a href="{{ route('story.show', $story->id) }}" target="_blank" class="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-sm text-xs font-bold font-headline transition-colors">
+                                Review
+                            </a>
+
+                            <form action="{{ route('admin.pending.approve', $story) }}" method="POST" class="inline ml-1">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="px-3 py-1.5 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 rounded-sm text-xs font-bold font-headline transition-colors">
+                                    Approve
+                                </button>
+                            </form>
+
+                            <form action="{{ route('admin.stories.destroy', $story) }}" method="POST" onsubmit="return confirm('Are you sure you want to reject/delete this story?');" class="inline ml-2">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-sm text-xs font-bold font-headline transition-colors">
+                                    Reject
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="px-6 py-12 text-center text-stone-500 font-body">No pending stories found.</td>
+                </tr>
+                @endforelse
+            @else
+                @forelse($chapters as $chapter)
+                <tr class="hover:bg-stone-50 transition-colors group">
+                    <td class="px-4 py-3">
+                        <div class="font-bold text-sm font-headline tracking-tight group-hover:text-primary transition-colors max-w-[200px] truncate">{{ $chapter->story->title }}</div>
+                        <div class="text-[10px] text-stone-400 font-label">Author: {{ $chapter->story->author }}</div>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="font-bold text-sm font-headline tracking-tight text-on-surface max-w-[250px] truncate">Chapter {{ $chapter->order_index }}: {{ $chapter->title }}</div>
+                        <div class="text-[10px] text-stone-400 font-label">Words: {{ number_format(str_word_count(strip_tags($chapter->content))) }}</div>
+                    </td>
+                    <td class="px-4 py-3 font-body text-xs">
+                        <span class="px-2 py-1 text-[10px] font-bold tracking-widest uppercase rounded-sm bg-yellow-100 text-yellow-800">Pending Review</span>
+                    </td>
+                    <td class="px-4 py-3 text-right">
+                        <div class="flex justify-end gap-1 items-center">
+                            <a href="{{ route('reading.show', ['id_or_slug' => $chapter->story->id, 'order_index' => $chapter->order_index]) }}" target="_blank" class="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-sm text-xs font-bold font-headline transition-colors">
+                                Review
+                            </a>
+
+                            <form action="{{ route('admin.pending.chapters.approve', $chapter) }}" method="POST" class="inline ml-1">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="px-3 py-1.5 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 rounded-sm text-xs font-bold font-headline transition-colors">
+                                    Approve
+                                </button>
+                            </form>
+
+                            <form action="{{ route('admin.pending.chapters.reject', $chapter) }}" method="POST" onsubmit="return confirm('Are you sure you want to reject/delete this chapter?');" class="inline ml-2">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-sm text-xs font-bold font-headline transition-colors">
+                                    Reject
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="4" class="px-6 py-12 text-center text-stone-500 font-body">No pending chapters found.</td>
+                </tr>
+                @endforelse
+            @endif
+        </tbody>
+    </table>
 </div>
-<!-- Table Container -->
-<div class="bg-white overflow-hidden shadow-sm rounded-lg border border-stone-200">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-stone-50 border-b border-stone-200">
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-secondary font-headline">Cover</th>
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-secondary font-headline">Title &amp; Genre</th>
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-secondary font-headline">Author</th>
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-secondary font-headline">Submitted Date</th>
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-secondary font-headline text-right">Word Count</th>
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-secondary font-headline text-center">Action</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-stone-200">
-<!-- Row 1 -->
-<tr class="hover:bg-stone-50 transition-colors duration-200 group">
-<td class="px-6 py-6">
-<div class="w-12 h-16 bg-stone-200 overflow-hidden shadow-sm rounded border border-stone-300">
-<img class="w-full h-full object-cover" data-alt="abstract book cover design with deep indigo and gold foil textures in a minimalist modern style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUEoP7Z-0aJ6YuSU69JTtJfcT7Mj2PvZzC7Q4C2gyto6X0fOnGRZxD9K-PmqR0_1tC1zvEtO02PA9_j1wyNbWgw45feAi6oqLX_Frul9BegjQuoGQs3_LwgUiK2X5BbTJ1xizwE8FJNnG3vdYLL_hqQmMKQtGmvuKBYOLnhvX1J8jJWgn2yV4IkuXLcSQ7S1fJQsQo9UmMTw5ZKqey9Kb5zHmybdnbrZqI_nn-Wm94e4eAYRbNB3gfJglLZrOuvIXmk0KoNDYuA-6R"/>
+
+<!-- Pagination Section -->
+<div class="mt-8 relative z-0">
+    @if($type === 'stories')
+        {{ $stories->links() }}
+    @else
+        {{ $chapters->links() }}
+    @endif
 </div>
-</td>
-<td class="px-6 py-6">
-<p class="font-headline font-bold text-on-surface text-base">The Echo of Dust</p>
-<p class="text-secondary text-xs font-medium uppercase tracking-tighter mt-1">Literary Fiction</p>
-</td>
-<td class="px-6 py-6">
-<div class="flex items-center gap-3">
-<span class="w-6 h-6 rounded-full bg-stone-200 flex items-center justify-center text-[10px] font-bold text-secondary">EH</span>
-<p class="text-sm font-medium text-on-surface">Evelyn Harper</p>
-</div>
-</td>
-<td class="px-6 py-6">
-<p class="text-sm text-secondary">Oct 12, 2023</p>
-</td>
-<td class="px-6 py-6 text-right">
-<p class="text-sm font-headline font-bold">84,200</p>
-</td>
-<td class="px-6 py-6 text-center">
-<a href="{{ url('admin/review') }}" class="inline-block bg-[#a53600] text-white px-6 py-2 rounded text-xs font-black uppercase tracking-widest hover:bg-[#8f2d00] shadow-sm transition-all active:scale-95">Review</a>
-</td>
-</tr>
-<!-- Row 2 -->
-<tr class="hover:bg-stone-50 transition-colors duration-200">
-<td class="px-6 py-6">
-<div class="w-12 h-16 bg-stone-200 overflow-hidden shadow-sm rounded border border-stone-300">
-<img class="w-full h-full object-cover" data-alt="minimalist white book cover with a single red rose petal and elegant black serif typography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCK44GL8scjurH2WHXMp7vmHkbhzxsy9cbDacP5pwKQzdWWRhkpgi6C1Fh7Fr7oPI11kyXbJkYCvVqThlSJcyZm9dtOyNLPEyBDFvfPmZSAJ3FW8cSvJRKrJ9D45X3_z1csq56KQv5qxxrGVZl16qf9RI04aIbYt10I8Ky4GPVpv2FNRCCbKMBK3v7XHRnV83Wr7yOHnHg5eOumE5Jb_9bHCrGlT0qgudv4rfJnSAuhCUCW6vU_x2Mod-aljEQaIZlHFmjQdIrjtEEi"/>
-</div>
-</td>
-<td class="px-6 py-6">
-<p class="font-headline font-bold text-on-surface text-base">Glass Menagerie</p>
-<p class="text-secondary text-xs font-medium uppercase tracking-tighter mt-1">Poetry Collection</p>
-</td>
-<td class="px-6 py-6">
-<div class="flex items-center gap-3">
-<span class="w-6 h-6 rounded-full bg-stone-200 flex items-center justify-center text-[10px] font-bold text-secondary">MA</span>
-<p class="text-sm font-medium text-on-surface">Marcus Aurel</p>
-</div>
-</td>
-<td class="px-6 py-6">
-<p class="text-sm text-secondary">Oct 14, 2023</p>
-</td>
-<td class="px-6 py-6 text-right">
-<p class="text-sm font-headline font-bold">12,500</p>
-</td>
-<td class="px-6 py-6 text-center">
-<a href="{{ url('admin/review') }}" class="inline-block bg-[#a53600] text-white px-6 py-2 rounded text-xs font-black uppercase tracking-widest hover:bg-[#8f2d00] shadow-sm transition-all active:scale-95">Review</a>
-</td>
-</tr>
-<!-- Row 3 -->
-<tr class="hover:bg-stone-50 transition-colors duration-200">
-<td class="px-6 py-6">
-<div class="w-12 h-16 bg-stone-200 overflow-hidden shadow-sm rounded border border-stone-300">
-<img class="w-full h-full object-cover" data-alt="monochrome cinematic book cover showing a foggy street lamp in a deserted city alley" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0eIV8SIV3KnJYZSpE9hw6ZLgRV0vrT0IY75tOARfYfeNEbccRzBz0BbeSGcHHFRSOvcJpFAZpPdfrdgJ-L0sGzijrAyKlFy4-WGkQP01J7JBRbGUUWSjeChRjZSj4Mq6z5r0EnglP8nPmEwUakD4UfN8-Nr9FxWQViQ756BYchWxPNjriAms7dB2jHh32GSyefFLgi2hmGTrQh1mt0tcWws8n8b49MaBbC73zHLymwZULd3qbjc-WvQVtM4rcWVuK2ri7D7NXzVQ9"/>
-</div>
-</td>
-<td class="px-6 py-6">
-<p class="font-headline font-bold text-on-surface text-base">Neon Silence</p>
-<p class="text-secondary text-xs font-medium uppercase tracking-tighter mt-1">Noir Thriller</p>
-</td>
-<td class="px-6 py-6">
-<div class="flex items-center gap-3">
-<span class="w-6 h-6 rounded-full bg-stone-200 flex items-center justify-center text-[10px] font-bold text-secondary">SV</span>
-<p class="text-sm font-medium text-on-surface">Sarah Vance</p>
-</div>
-</td>
-<td class="px-6 py-6">
-<p class="text-sm text-secondary">Oct 15, 2023</p>
-</td>
-<td class="px-6 py-6 text-right">
-<p class="text-sm font-headline font-bold">96,800</p>
-</td>
-<td class="px-6 py-6 text-center">
-<a href="{{ url('admin/review') }}" class="inline-block bg-[#a53600] text-white px-6 py-2 rounded text-xs font-black uppercase tracking-widest hover:bg-[#8f2d00] shadow-sm transition-all active:scale-95">Review</a>
-</td>
-</tr>
-<!-- Row 4 -->
-<tr class="hover:bg-stone-50 transition-colors duration-200">
-<td class="px-6 py-6">
-<div class="w-12 h-16 bg-stone-200 overflow-hidden shadow-sm rounded border border-stone-300">
-<img class="w-full h-full object-cover" data-alt="vibrant abstract book cover with watercolor splashes of orange and teal against a cream background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVpduW6hS2HeNdeJ1stItrAHjYpPCtsQhZRZXEKZZhJDPGHeGnhf6slgWmj2kmD2HvA1MZ79BlNMgCXwSB4jOx1ummbazQsCfVXw0Nb5YCFLRIUAsVBBDgUViwowisWoLgBIkNvxbkLeYHAQkGdXm1-lT_T1Ru76uWfOIFM9ejwVCCdwq7UajiqgU6WztWaqdnWFju22lghHevwwFfyl_SFWc8HiZnWrk0m9R_NxJHbmPBNT0sRE81eqXaXsNxqqINqTo2KDsqH08j"/>
-</div>
-</td>
-<td class="px-6 py-6">
-<p class="font-headline font-bold text-on-surface text-base">Summer Without Sun</p>
-<p class="text-secondary text-xs font-medium uppercase tracking-tighter mt-1">Contemporary Fiction</p>
-</td>
-<td class="px-6 py-6">
-<div class="flex items-center gap-3">
-<span class="w-6 h-6 rounded-full bg-stone-200 flex items-center justify-center text-[10px] font-bold text-secondary">JK</span>
-<p class="text-sm font-medium text-on-surface">Julian Knight</p>
-</div>
-</td>
-<td class="px-6 py-6">
-<p class="text-sm text-secondary">Oct 16, 2023</p>
-</td>
-<td class="px-6 py-6 text-right">
-<p class="text-sm font-headline font-bold">72,000</p>
-</td>
-<td class="px-6 py-6 text-center">
-<a href="{{ url('admin/review') }}" class="inline-block bg-[#a53600] text-white px-6 py-2 rounded text-xs font-black uppercase tracking-widest hover:bg-[#8f2d00] shadow-sm transition-all active:scale-95">Review</a>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<!-- Pagination Shell -->
-<div class="mt-8 flex justify-between items-center py-4 text-stone-500">
-<p class="text-xs text-secondary font-headline">Showing 1 to 4 of 24 submissions</p>
-<div class="flex items-center gap-2">
-<button class="w-10 h-10 flex items-center justify-center text-secondary hover:text-on-surface transition-colors rounded hover:bg-stone-100">
-<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
-</button>
-<button class="w-10 h-10 flex items-center justify-center bg-[#a53600] text-white font-bold text-xs rounded shadow-sm">1</button>
-<button class="w-10 h-10 flex items-center justify-center text-secondary hover:text-on-surface transition-colors rounded hover:bg-stone-100 font-bold text-xs">2</button>
-<button class="w-10 h-10 flex items-center justify-center text-secondary hover:text-on-surface transition-colors rounded hover:bg-stone-100 font-bold text-xs">3</button>
-<span class="text-secondary px-2">...</span>
-<button class="w-10 h-10 flex items-center justify-center text-secondary hover:text-on-surface transition-colors rounded hover:bg-stone-100 font-bold text-xs">6</button>
-<button class="w-10 h-10 flex items-center justify-center text-secondary hover:text-on-surface transition-colors rounded hover:bg-stone-100">
-<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
-</button>
-</div>
-</div>
-</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toast = document.getElementById('toast-success');
+        if (toast) {
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 500);
+            }, 5000);
+        }
+    });
+</script>
 @endsection

@@ -13,7 +13,11 @@ class CategoryController extends Controller
     {
         $category = Category::where('slug', $slug)->firstOrFail();
         
-        $query = $category->stories();
+        $query = $category->stories()->where('is_approved', true)
+                                     ->where('is_published', true)
+                                     ->withCount(['chapters' => function($q) {
+                                         $q->where('status', 'published')->where('is_approved', true);
+                                     }]);
 
         $filter = $request->get('filter', 'newest');
 

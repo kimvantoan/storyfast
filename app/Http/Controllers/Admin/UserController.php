@@ -20,6 +20,10 @@ class UserController extends Controller
             });
         }
 
+        if ($request->get('requested') == '1') {
+            $query->where('is_author_requested', true);
+        }
+
         if ($role = $request->get('role')) {
             if (in_array($role, ['admin', 'author', 'reader'])) {
                 $query->where('role', $role);
@@ -61,10 +65,19 @@ class UserController extends Controller
         }
 
         $validated = $request->validate([
-            'role' => 'required|in:admin,author,reader',
+            'role' => 'required|in:author,reader',
         ]);
 
-        $user->update(['role' => $validated['role']]);
+        $user->update([
+            'role' => $validated['role'],
+            'is_author_requested' => false
+        ]);
+        return back();
+    }
+
+    public function rejectRequest(Request $request, User $user)
+    {
+        $user->update(['is_author_requested' => false]);
         return back();
     }
 

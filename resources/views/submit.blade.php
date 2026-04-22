@@ -29,15 +29,31 @@
     </div>
 
     <!-- Form Section: Step 1 -->
-    <div class="space-y-12">
+    <form action="{{ route('story.submit.post') }}" method="POST" enctype="multipart/form-data" class="space-y-12">
+        @csrf
+        
+        @if($errors->any())
+            <div class="mb-6 p-4 bg-red-50 text-red-700 font-headline font-bold text-sm rounded border border-red-100">
+                <ul class="list-disc pl-4 space-y-1">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <section class="grid grid-cols-1 md:grid-cols-12 gap-12">
             <!-- Cover Upload -->
             <div class="md:col-span-4">
                 <label class="block text-sm font-headline font-bold uppercase tracking-widest text-secondary mb-4">Cover Image</label>
-                <div class="aspect-[3/4] bg-surface-container-low border border-dashed border-outline-variant hover:border-primary transition-colors cursor-pointer group relative flex flex-col items-center justify-center p-6 text-center rounded-[6px]">
-                    <span class="material-symbols-outlined text-4xl text-outline mb-3 group-hover:text-primary transition-colors">upload_file</span>
-                    <p class="text-xs font-headline font-medium text-secondary group-hover:text-primary">Drag &amp; drop or click to upload image</p>
-                    <p class="text-[10px] text-outline mt-2">Ratio 3:4 (e.g. 600x800px)</p>
+                <div id="coverUploadArea" class="aspect-[3/4] bg-surface-container-low border border-dashed border-outline-variant hover:border-primary transition-colors cursor-pointer group relative flex flex-col items-center justify-center p-6 text-center rounded-[6px] overflow-hidden">
+                    <input type="file" id="coverImageInput" name="cover_image" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-20" accept="image/*">
+                    <img id="coverPreview" src="#" alt="Cover Preview" class="absolute inset-0 w-full h-full object-cover hidden z-10">
+                    <div id="coverUploadText" class="flex flex-col items-center relative z-0 pointer-events-none transition-opacity duration-300">
+                        <span class="material-symbols-outlined text-4xl text-outline mb-3 group-hover:text-primary transition-colors">upload_file</span>
+                        <p class="text-xs font-headline font-medium text-secondary group-hover:text-primary">Drag &amp; drop or click to upload</p>
+                        <p class="text-[10px] text-outline mt-2">Ratio 3:4</p>
+                    </div>
                 </div>
             </div>
 
@@ -45,14 +61,17 @@
             <div class="md:col-span-8 space-y-8">
                 <div>
                     <label class="block text-sm font-headline font-bold uppercase tracking-widest text-secondary mb-2" for="story-title">Story Title</label>
-                    <input class="w-full bg-surface-container-lowest border-b border-outline-variant focus:border-primary focus:ring-0 py-3 text-lg font-body placeholder:text-outline/50 transition-all outline-none" id="story-title" placeholder="Enter your story title..." type="text"/>
+                    <input name="title" value="{{ old('title') }}" required class="w-full bg-surface-container-lowest border-b border-outline-variant focus:border-primary focus:ring-0 py-3 text-lg font-body placeholder:text-outline/50 transition-all outline-none" id="story-title" placeholder="Enter your story title..." type="text"/>
+                </div>
+                <div>
+                    <label class="block text-sm font-headline font-bold uppercase tracking-widest text-secondary mb-2" for="story-author">Author Name</label>
+                    <input name="author" value="{{ old('author') }}" required class="w-full bg-surface-container-lowest border-b border-outline-variant focus:border-primary focus:ring-0 py-3 text-lg font-body placeholder:text-outline/50 transition-all outline-none" id="story-author" placeholder="Enter author or pen name..." type="text"/>
                 </div>
                 <div>
                     <div class="flex justify-between mb-2">
                         <label class="block text-sm font-headline font-bold uppercase tracking-widest text-secondary" for="story-desc">Summary</label>
-                        <span class="text-xs text-outline font-headline">0 / 2000</span>
                     </div>
-                    <textarea class="w-full bg-surface-container-lowest border border-outline-variant focus:border-on-surface focus:ring-0 p-4 text-base font-body leading-relaxed placeholder:text-outline/50 transition-all outline-none rounded-[6px]" id="story-desc" placeholder="Introduce your story briefly..." rows="6"></textarea>
+                    <textarea name="description" required class="w-full bg-surface-container-lowest border border-outline-variant focus:border-on-surface focus:ring-0 p-4 text-base font-body leading-relaxed placeholder:text-outline/50 transition-all outline-none rounded-[6px]" id="story-desc" placeholder="Introduce your story briefly..." rows="4">{{ old('description') }}</textarea>
                 </div>
             </div>
         </section>
@@ -61,24 +80,17 @@
         <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
                 <label class="block text-sm font-headline font-bold uppercase tracking-widest text-secondary mb-3">Main Genre</label>
-                <select class="w-full bg-surface-container-lowest border border-outline-variant focus:border-on-surface p-3 font-body outline-none rounded-[6px]">
+                <select name="category_id" required class="w-full bg-surface-container-lowest border border-outline-variant focus:border-on-surface p-3 font-body outline-none rounded-[6px]">
                     <option value="">Select genre</option>
-                    <option value="fiction">Modern Fiction</option>
-                    <option value="fantasy">Fantasy / Eastern Fantasy</option>
-                    <option value="romance">Romance</option>
-                    <option value="thriller">Mystery / Thriller</option>
+                    @foreach($categories as $category)
+                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                    @endforeach
                 </select>
             </div>
             <div>
                 <label class="block text-sm font-headline font-bold uppercase tracking-widest text-secondary mb-3">Tags (Keywords)</label>
                 <div class="flex flex-wrap gap-2 border border-outline-variant bg-surface-container-lowest p-2 min-h-[48px] rounded-[6px]">
-                    <span class="inline-flex items-center gap-1 bg-surface-container-high px-3 py-1 text-xs font-medium text-secondary rounded-[4px]">
-                        Rebirth <span class="material-symbols-outlined text-[14px] cursor-pointer hover:text-primary transition-colors">close</span>
-                    </span>
-                    <span class="inline-flex items-center gap-1 bg-surface-container-high px-3 py-1 text-xs font-medium text-secondary rounded-[4px]">
-                        Angst <span class="material-symbols-outlined text-[14px] cursor-pointer hover:text-primary transition-colors">close</span>
-                    </span>
-                    <input class="border-none focus:ring-0 bg-transparent text-sm py-1 px-2 font-body w-24 outline-none" placeholder="Add tag..." type="text"/>
+                    <input class="border-none focus:ring-0 bg-transparent text-sm py-1 px-2 font-body w-full outline-none" placeholder="Add tag (Coming soon)..." type="text" disabled/>
                 </div>
             </div>
         </section>
@@ -89,11 +101,11 @@
                 <p class="block text-sm font-headline font-bold uppercase tracking-widest text-secondary mb-4">Status</p>
                 <div class="flex gap-4">
                     <div class="flex-1">
-                        <input checked="" class="hidden peer" id="ongoing" name="status" type="radio"/>
+                        <input checked class="hidden peer" id="ongoing" value="ongoing" name="status" type="radio"/>
                         <label class="flex items-center justify-center border border-outline-variant py-3 cursor-pointer rounded-[6px] hover:bg-surface-container-low transition-all text-sm font-medium text-secondary peer-checked:border-primary peer-checked:text-primary" for="ongoing">Ongoing</label>
                     </div>
                     <div class="flex-1">
-                        <input class="hidden peer" id="completed" name="status" type="radio"/>
+                        <input class="hidden peer" id="completed" value="completed" name="status" type="radio"/>
                         <label class="flex items-center justify-center border border-outline-variant py-3 cursor-pointer rounded-[6px] hover:bg-surface-container-low transition-all text-sm font-medium text-secondary peer-checked:border-primary peer-checked:text-primary" for="completed">Completed</label>
                     </div>
                 </div>
@@ -102,11 +114,11 @@
                 <p class="block text-sm font-headline font-bold uppercase tracking-widest text-secondary mb-4">Target Audience</p>
                 <div class="flex gap-4">
                     <div class="flex-1">
-                        <input checked="" class="hidden peer" id="all" name="audience" type="radio"/>
+                        <input checked class="hidden peer" id="all" value="all" name="audience" type="radio"/>
                         <label class="flex items-center justify-center border border-outline-variant py-3 cursor-pointer rounded-[6px] hover:bg-surface-container-low transition-all text-sm font-medium text-secondary peer-checked:border-primary peer-checked:text-primary" for="all">All ages</label>
                     </div>
                     <div class="flex-1">
-                        <input class="hidden peer" id="mature" name="audience" type="radio"/>
+                        <input class="hidden peer" id="mature" value="mature" name="audience" type="radio"/>
                         <label class="flex items-center justify-center border border-outline-variant py-3 cursor-pointer rounded-[6px] hover:bg-surface-container-low transition-all text-sm font-medium text-secondary peer-checked:border-primary peer-checked:text-primary" for="mature">18+ (Restricted)</label>
                     </div>
                 </div>
@@ -115,12 +127,12 @@
 
         <!-- Action Area -->
         <footer class="pt-12 flex justify-end gap-6 border-t border-outline-variant/10">
-            <button class="px-8 py-3 text-sm font-headline font-bold text-secondary hover:text-on-surface transition-colors rounded-[6px]">Save draft</button>
-            <button class="px-10 py-3 bg-primary text-on-primary font-headline font-bold text-sm tracking-wide transition-transform hover:bg-[#812800] active:scale-[0.98] rounded-[6px]">
-                Next: Write First Chapter
+            <button type="button" class="px-8 py-3 text-sm font-headline font-bold text-secondary hover:text-on-surface transition-colors rounded-[6px]">Save draft</button>
+            <button type="submit" class="px-10 py-3 bg-primary text-on-primary font-headline font-bold text-sm tracking-wide transition-transform hover:bg-[#812800] active:scale-[0.98] rounded-[6px]">
+                Submit Manuscript
             </button>
         </footer>
-    </div>
+    </form>
 
     <!-- Section: Preview / Step 3 Simulation -->
     <div class="mt-32 pt-24 border-t border-outline-variant/20 opacity-50 relative">
@@ -160,4 +172,28 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Image Preview Logic
+        const coverInput = document.getElementById('coverImageInput');
+        const coverPreview = document.getElementById('coverPreview');
+        const coverUploadText = document.getElementById('coverUploadText');
+
+        if (coverInput) {
+            coverInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    coverPreview.src = URL.createObjectURL(file);
+                    coverPreview.classList.remove('hidden');
+                    coverUploadText.classList.add('opacity-0', 'pointer-events-none');
+                } else {
+                    coverPreview.src = '#';
+                    coverPreview.classList.add('hidden');
+                    coverUploadText.classList.remove('opacity-0', 'pointer-events-none');
+                }
+            });
+        }
+    });
+</script>
 @endsection
