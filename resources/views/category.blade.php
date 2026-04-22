@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
-@section('title', '- Category')
+@section('title', '- ' . $category->name . ' Novels')
+@section('meta_title', 'Read ' . $category->name . ' Novels Online Free | OnlineFreeNovels')
+@section('meta_description', $category->description ? Str::limit(strip_tags($category->description), 160) : 'Explore the best ' . $category->name . ' novels at OnlineFreeNovels. Read full and updated stories entirely for free.')
+
 
 @section('content')
 <div class="max-w-[1280px] mx-auto px-4 md:px-8 py-2">
@@ -16,9 +19,9 @@
 
     <!-- Filter Bar -->
     <div class="mb-8 flex gap-6 items-center text-[13px] uppercase border-b border-gray-100 pb-4">
-        <a href="{{ route('category.show', ['slug' => $category->slug, 'filter' => 'hottest']) }}" class="{{ (!isset($filter) || $filter === 'hottest') ? 'bg-[#3b66f5] text-white px-3 py-1.5 rounded-sm' : 'text-gray-500 hover:text-blue-600 transition-colors' }}">Hot</a>
-        <a href="{{ route('category.show', ['slug' => $category->slug, 'filter' => 'newest']) }}" class="{{ (isset($filter) && $filter === 'newest') ? 'bg-[#3b66f5] text-white px-3 py-1.5 rounded-sm' : 'text-gray-500 hover:text-blue-600 transition-colors' }}">Newest</a>
-        <a href="{{ route('category.show', ['slug' => $category->slug, 'filter' => 'full']) }}" class="{{ (isset($filter) && $filter === 'full') ? 'bg-[#3b66f5] text-white px-3 py-1.5 rounded-sm' : 'text-gray-500 hover:text-blue-600 transition-colors' }}">Full</a>
+        <a href="{{ route('category.show', ['slug' => $category->slug, 'filter' => 'hottest']) }}" class="{{ (!isset($filter) || $filter === 'hottest') ? 'bg-primary text-white px-3 py-1.5 rounded-sm' : 'text-gray-500 hover:text-primary transition-colors' }}">Hot</a>
+        <a href="{{ route('category.show', ['slug' => $category->slug, 'filter' => 'newest']) }}" class="{{ (isset($filter) && $filter === 'newest') ? 'bg-primary text-white px-3 py-1.5 rounded-sm' : 'text-gray-500 hover:text-primary transition-colors' }}">Newest</a>
+        <a href="{{ route('category.show', ['slug' => $category->slug, 'filter' => 'full']) }}" class="{{ (isset($filter) && $filter === 'full') ? 'bg-primary text-white px-3 py-1.5 rounded-sm' : 'text-gray-500 hover:text-primary transition-colors' }}">Full</a>
     </div>
 
     <!-- Story Grid -->
@@ -54,7 +57,7 @@
                         <svg class="w-[14px] h-[14px] text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                             <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005z" clip-rule="evenodd" />
                         </svg>
-                        <span>5.0</span>
+                        <span>{{ $story->rating ?? 0 }}</span>
                     </div>
                     <div class="flex items-center gap-1 opacity-80">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-[14px] h-[14px]">

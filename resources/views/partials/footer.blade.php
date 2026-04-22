@@ -2,13 +2,13 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-[1440px] mx-auto px-12 py-24">
         <div class="space-y-6">
             <a href="{{ url('/') }}" class="inline-block">
-                <img src="{{ asset('storyfast-wordmark.svg') }}" alt="StoryFast" class="h-8 dark:brightness-0 dark:invert">
+                <img src="{{ asset('storyfast-wordmark.png') }}" alt="OnlineFreeNovels" class="h-20 dark:brightness-0 dark:invert">
             </a>
             <p class="font-['Be_Vietnam_Pro'] text-base leading-[1.9] text-[#5e5e5e] dark:text-[#a19f9e] max-w-sm">
                 Explore elite digital manuscripts, where words construct worlds. Powered by Kolsup Limited.
             </p>
             <p class="text-sm font-label text-[#888888] dark:text-[#71706f]">
-                © {{ date('Y') }} StoryFast. All rights reserved.
+                © {{ date('Y') }} OnlineFreeNovels. All rights reserved.
             </p>
         </div>
         <div class="space-y-8">

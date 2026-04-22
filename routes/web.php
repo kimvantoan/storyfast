@@ -10,6 +10,12 @@ Route::get('/story/{id_or_slug}', [\App\Http\Controllers\Frontend\StoryControlle
 Route::get('/story/{id_or_slug}/chapter/{order_index}', [\App\Http\Controllers\Frontend\ReadingController::class, 'show'])->name('reading.show');
 Route::get('/story/{id_or_slug}/drawer-chapters', [\App\Http\Controllers\Frontend\ReadingController::class, 'drawerList'])->name('reading.drawer.list');
 
+Route::post('/story/{story}/rate', [\App\Http\Controllers\Frontend\RatingController::class, 'store'])->name('story.rate')->middleware('auth');
+Route::post('/story/{story}/comments', [\App\Http\Controllers\Frontend\CommentController::class, 'store'])->name('story.comments.store')->middleware('auth');
+Route::post('/comments/{comment}/like', [\App\Http\Controllers\Frontend\CommentController::class, 'toggleLike'])->name('story.comments.like')->middleware('auth');
+
+Route::get('/search', [\App\Http\Controllers\Frontend\SearchController::class, 'index'])->name('search');
+
 Route::post('/user/request-author', [\App\Http\Controllers\Frontend\UserController::class, 'requestAuthor'])->name('user.request_author')->middleware('auth');
 
 // Route::get('/submit', [\App\Http\Controllers\User\SubmitController::class, 'create'])->name('story.submit');

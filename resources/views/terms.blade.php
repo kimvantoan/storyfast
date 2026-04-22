@@ -10,14 +10,14 @@
 
     <article class="space-y-12 text-lg text-secondary">
         <section>
-            <p>Welcome to <strong>StoryFast</strong>. By accessing and using our website, you agree to comply with the terms and conditions outlined below. Please read them carefully before using our services.</p>
+            <p>Welcome to <strong>OnlineFreeNovels</strong>. By accessing and using our website, you agree to comply with the terms and conditions outlined below. Please read them carefully before using our services.</p>
         </section>
 
         <section>
             <h2 class="font-headline font-bold text-2xl text-on-surface mb-3">
                 1. Introduction
             </h2>
-            <p>StoryFast (developed by Kolsup Limited) is an online platform that provides literature, digital reading materials, and a supportive ecosystem for users to discover, read, and share stories. By continuing to use our website, you signify your full acceptance of these Terms of Service.</p>
+            <p>OnlineFreeNovels (developed by Kolsup Limited) is an online platform that provides literature, digital reading materials, and a supportive ecosystem for users to discover, read, and share stories. By continuing to use our website, you signify your full acceptance of these Terms of Service.</p>
         </section>
 
         <section>
@@ -30,7 +30,7 @@
                 <li>Interactive reading tools, AI-powered personalized recommendations, and categorized discovery.</li>
                 <li>A streamlined platform for authors to submit and showcase their creative works.</li>
             </ul>
-            <p>StoryFast does not claim universal ownership of all user-published external content unless specifically contracted. Some literary works may be provided or licensed directly by third parties or author partners.</p>
+            <p>OnlineFreeNovels does not claim universal ownership of all user-published external content unless specifically contracted. Some literary works may be provided or licensed directly by third parties or author partners.</p>
         </section>
 
         <section>
@@ -50,7 +50,7 @@
             <h2 class="font-headline font-bold text-2xl text-on-surface mb-3">
                 4. Content & Intellectual Property
             </h2>
-            <p class="mb-4">All native platform content on StoryFast, heavily including:</p>
+            <p class="mb-4">All native platform content on OnlineFreeNovels, heavily including:</p>
             <ul class="list-disc pl-6 space-y-2 marker:text-[#a53600] mb-4">
                 <li>Interface designs, styling aesthetics, wordmark logos, and source codes.</li>
                 <li>Generative structures and AI-powered metadata.</li>
@@ -74,7 +74,7 @@
             <h2 class="font-headline font-bold text-2xl text-on-surface mb-3">
                 6. Limitation of Liability
             </h2>
-            <p class="mb-4">StoryFast strives for excellence but cannot mathematically guarantee:</p>
+            <p class="mb-4">OnlineFreeNovels strives for excellence but cannot mathematically guarantee:</p>
             <ul class="list-disc pl-6 space-y-2 marker:text-[#a53600] mb-4">
                 <li>The absolute validity or accuracy of all community-contributed chapters or narratives.</li>
                 <li>That the digital service will be entirely uninterrupted or permanently error-free at all hours.</li>
@@ -98,7 +98,7 @@
                 Hotline: (+852) 5170 7620
             </div>
             <p class="text-xs font-medium text-stone-500 uppercase tracking-widest border-t border-stone-200 pt-4">
-                Continuing to read on StoryFast signifies that you have digested, understood, and agreed to this Agreement.
+                Continuing to read on OnlineFreeNovels signifies that you have digested, understood, and agreed to this Agreement.
             </p>
         </section>
     </article>

@@ -1,8 +1,15 @@
 <nav class="sticky top-0 w-full z-50 bg-[#fcf9f8]/80 dark:bg-[#1c1b1b]/80 backdrop-blur-xl no-border tonal-shift bg-[#f6f3f2] dark:bg-[#2a2827] flat no shadows">
     <div class="flex justify-between items-center max-w-[1440px] mx-auto px-4 md:px-12 py-2 md:py-3 relative">
-        <a href="{{ url('/') }}" class="flex items-center">
-            <img src="{{ asset('storyfast-wordmark.svg') }}" alt="StoryFast" class="h-7 w-auto">
-        </a>
+        <div class="flex items-center">
+            <!-- Hamburger Button for Mobile -->
+            <button onclick="toggleMobileMenu()" class="md:hidden text-secondary pr-4 focus:outline-none">
+                <span class="material-symbols-outlined text-[28px] mt-1">menu</span>
+            </button>
+
+            <a href="{{ url('/') }}" class="flex items-center">
+                <img src="{{ asset('storyfast-wordmark.png') }}" alt="OnlineFreeNovels" class="h-10 md:h-12 w-auto">
+            </a>
+        </div>
         <div class="hidden md:flex items-center space-x-10 font-['Inter'] font-medium text-sm tracking-tight leading-relaxed">
             <!-- Categories Dropdown Group -->
             <div class="relative group py-2">
@@ -64,20 +71,20 @@
                             Admin Dashboard
                         </a>
                         @elseif(auth()->user()->role === 'reader')
-                            @if(auth()->user()->is_author_requested)
-                            <div class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-stone-400 dark:text-stone-500 cursor-not-allowed cursor-help" title="Author Request Pending">
-                                <span class="material-symbols-outlined text-[18px]">pending</span>
-                                Pending Author
-                            </div>
-                            @else
-                            <form method="POST" action="{{ route('user.request_author') }}" class="m-0 border-b border-stone-100 dark:border-stone-800">
-                                @csrf
-                                <button type="submit" class="w-full text-left flex items-center gap-3 px-4 py-3 text-sm font-medium text-stone-700 dark:text-gray-300 hover:bg-stone-50 dark:hover:bg-stone-800 hover:text-primary transition-colors">
-                                    <span class="material-symbols-outlined text-[18px]">edit_document</span>
-                                    Become Author
-                                </button>
-                            </form>
-                            @endif
+                        @if(auth()->user()->is_author_requested)
+                        <div class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-stone-400 dark:text-stone-500 cursor-not-allowed cursor-help" title="Author Request Pending">
+                            <span class="material-symbols-outlined text-[18px]">pending</span>
+                            Pending Author
+                        </div>
+                        @else
+                        <form method="POST" action="{{ route('user.request_author') }}" class="m-0 border-b border-stone-100 dark:border-stone-800">
+                            @csrf
+                            <button type="submit" class="w-full text-left flex items-center gap-3 px-4 py-3 text-sm font-medium text-stone-700 dark:text-gray-300 hover:bg-stone-50 dark:hover:bg-stone-800 hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-[18px]">edit_document</span>
+                                Become Author
+                            </button>
+                        </form>
+                        @endif
                         @endif
 
                         <div class="h-[1px] bg-stone-100 dark:bg-stone-800 w-full my-1"></div>
@@ -94,38 +101,40 @@
                 </div>
             </div>
             @endguest
-
-            <!-- Hamburger Button for Mobile -->
-            <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="md:hidden text-secondary ml-1 mt-1">
-                <span class="material-symbols-outlined text-[24px]">menu</span>
-            </button>
         </div>
     </div>
 
     <!-- Mobile Menu -->
-    <div id="mobileMenu" class="hidden md:hidden absolute top-full left-0 w-full bg-white dark:bg-[#1c1b1b] border-t border-stone-200 dark:border-stone-800 shadow-xl flex flex-col font-['Inter'] font-medium text-sm">
-        
-        <!-- Mobile Search Input -->
-        <div class="px-6 py-4 border-b border-stone-100 dark:border-stone-800">
-            <form action="{{ url('/search') }}" method="GET" class="relative w-full">
-                <input type="text" name="q" placeholder="Search stories..." class="w-full bg-stone-100 dark:bg-[#2a2827] border-none text-sm font-headline tracking-wider rounded-lg py-3 px-4 pl-11 focus:outline-none focus:ring-1 focus:ring-[#a53600] transition-all text-stone-800 dark:text-stone-200 placeholder-stone-500">
-                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-stone-500 text-[20px] pointer-events-none">search</span>
-            </form>
+    <div id="mobileMenu" class="opacity-0 invisible -translate-y-4 pointer-events-none transition-all duration-300 md:hidden absolute top-full left-0 w-full max-h-[85vh] overflow-y-auto bg-white dark:bg-[#1c1b1b] border-t border-stone-200 dark:border-stone-800 shadow-xl flex flex-col font-['Inter'] font-medium text-sm">
+
+        <!-- Categories Accordion Container -->
+        <div class="bg-white dark:bg-[#1c1b1b]">
+            <!-- Accordion Header -->
+            <button onclick="toggleMobileCategories()" class="w-full flex justify-between items-stretch border-b border-stone-100 dark:border-stone-800 focus:outline-none">
+                <div class="flex-1 text-left px-6 py-4 text-stone-700 dark:text-stone-300 font-medium leading-none">
+                    Categories
+                </div>
+                <div class="px-4 border-l border-stone-100 dark:border-stone-800 flex items-center justify-center">
+                    <span id="mobileCatIcon" class="material-symbols-outlined text-stone-600 dark:text-stone-400 text-[20px] transition-transform duration-300">expand_less</span>
+                </div>
+            </button>
+
+            <!-- Accordion Content (Grid 2 cols) -->
+            <div id="mobileCategoriesList" class="grid grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+                <div class="overflow-hidden">
+                    <div class="grid grid-cols-2">
+                        @if(isset($globalCategories))
+                        @foreach($globalCategories as $cat)
+                        <a href="{{ route('category.show', $cat->slug) }}" class="px-6 py-3.5 border-b border-stone-100 dark:border-stone-800 text-stone-500 dark:text-stone-400 font-medium hover:bg-stone-50 dark:hover:bg-stone-800/50 hover:text-[#a53600] transition-colors text-[13.5px] truncate">
+                            {{ $cat->name }}
+                        </a>
+                        @endforeach
+                        @endif
+                    </div>
+                </div>
+            </div>
         </div>
 
-        @if(isset($globalCategories))
-            @foreach($globalCategories as $cat)
-            <a href="{{ route('category.show', $cat->slug) }}" class="px-6 py-4 border-b border-stone-100 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800">Category: {{ $cat->name }}</a>
-            @endforeach
-        @endif
-        
-        @auth
-            @if(in_array(auth()->user()->role, ['admin', 'author']))
-            <a href="{{ url('/admin/stories') }}" class="px-6 py-4 border-b border-stone-100 dark:border-stone-800 text-primary font-bold hover:bg-stone-50 dark:hover:bg-stone-800 flex items-center gap-2">
-                <span class="material-symbols-outlined text-[18px]">dashboard</span> Admin Dashboard
-            </a>
-            @endif
-        @endauth
     </div>
 </nav>
 
@@ -162,20 +171,40 @@
                     </div>
                 </div>
             </div>
-            </div>
         </div>
     </div>
 </div>
+</div>
 
 <script>
+    function toggleMobileMenu() {
+        const menu = document.getElementById('mobileMenu');
+        if (menu.classList.contains('opacity-0')) {
+            menu.classList.remove('opacity-0', 'invisible', '-translate-y-4', 'pointer-events-none');
+            menu.classList.add('opacity-100', 'visible', 'translate-y-0', 'pointer-events-auto');
+        } else {
+            menu.classList.add('opacity-0', 'invisible', '-translate-y-4', 'pointer-events-none');
+            menu.classList.remove('opacity-100', 'visible', 'translate-y-0', 'pointer-events-auto');
+        }
+    }
+
+    function toggleMobileCategories() {
+        const list = document.getElementById('mobileCategoriesList');
+        const icon = document.getElementById('mobileCatIcon');
+        
+        list.classList.toggle('grid-rows-[1fr]');
+        list.classList.toggle('grid-rows-[0fr]');
+        icon.classList.toggle('rotate-180');
+    }
+
     document.addEventListener('click', function(event) {
         var dropdown = document.getElementById('accountDropdown');
         var icon = document.getElementById('accountDropdownIcon');
         var button = dropdown ? dropdown.previousElementSibling : null;
-        
+
         if (dropdown && !dropdown.classList.contains('hidden') && !dropdown.contains(event.target) && (!button || !button.contains(event.target))) {
             dropdown.classList.add('hidden');
-            if(icon) icon.classList.remove('rotate-180');
+            if (icon) icon.classList.remove('rotate-180');
         }
     });
 </script>

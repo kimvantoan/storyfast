@@ -5,13 +5,13 @@
 @section('content')
 <main class="max-w-[800px] mx-auto px-6 py-16 font-body text-[#1c1b1b] dark:text-[#fcf9f8] leading-relaxed">
     <div class="text-center mb-16">
-        <h1 class="font-headline font-black text-5xl tracking-tighter mb-4 text-on-surface">About StoryFast</h1>
+        <h1 class="font-headline font-black text-5xl tracking-tighter mb-4 text-on-surface">About OnlineFreeNovels</h1>
         <p class="text-secondary text-lg">A next-generation digital reading platform by Kolsup Limited.</p>
     </div>
 
     <article class="space-y-12 text-lg text-secondary">
         <section>
-            <p><strong>StoryFast</strong> is a premier online reading platform developed by <strong>Kolsup Limited</strong>, with the core objective of allowing users to discover, read, and share stories quickly, seamlessly, and interactively.</p>
+            <p><strong>OnlineFreeNovels</strong> is a premier online reading platform developed by <strong>Kolsup Limited</strong>, with the core objective of allowing users to discover, read, and share stories quickly, seamlessly, and interactively.</p>
             <p class="mt-4">We focus on building a smart literary ecosystem where you can dive into captivating narratives from around the world in just a few clicks—from finding the perfect fictional world to connecting with incredible authors.</p>
         </section>
 
@@ -19,7 +19,7 @@
             <h2 class="font-headline font-bold text-2xl text-on-surface mb-4">
                 Our Mission
             </h2>
-            <p class="mb-4">StoryFast was born with a simple desire:</p>
+            <p class="mb-4">OnlineFreeNovels was born with a simple desire:</p>
             <ul class="list-disc pl-6 space-y-2 marker:text-primary">
                 <li>Simplify the reading and publishing experience.</li>
                 <li>Provide a vast, accessible library of high-quality stories.</li>
@@ -30,7 +30,7 @@
 
         <section>
             <h2 class="font-headline font-bold text-2xl text-on-surface mb-4">
-                What StoryFast Offers?
+                What OnlineFreeNovels Offers?
             </h2>
             
             <div class="space-y-6">
@@ -58,7 +58,7 @@
                 <li>Collaboration with talented and reputable authors worldwide.</li>
                 <li>Always placing the reader's experience at the center of everything we do.</li>
             </ul>
-            <p>Recognizing that every great platform needs time to cultivate trust and a vibrant community, StoryFast focuses on sustainable growth. We are refining our product day by day to deliver genuine value to readers and writers alike.</p>
+            <p>Recognizing that every great platform needs time to cultivate trust and a vibrant community, OnlineFreeNovels focuses on sustainable growth. We are refining our product day by day to deliver genuine value to readers and writers alike.</p>
         </section>
 
         <section class="bg-surface-container-low p-8 rounded-xl border border-stone-200 flex flex-col md:flex-row gap-8 shadow-sm">
@@ -87,8 +87,8 @@
             <h2 class="font-headline font-bold text-2xl text-on-surface mb-4">
                 Vision
             </h2>
-            <p class="mb-6">In the future, StoryFast aims to become the premier AI-integrated reading platform, empowering users not just to "read" but to experience storytelling in a profoundly smarter way.</p>
-            <p class="font-bold text-on-surface italic px-8 py-4 bg-stone-50 rounded-lg">"StoryFast is more than just a reading website — it's your key to exploring infinite worlds in the quickest and most optimal way possible."</p>
+            <p class="mb-6">In the future, OnlineFreeNovels aims to become the premier AI-integrated reading platform, empowering users not just to "read" but to experience storytelling in a profoundly smarter way.</p>
+            <p class="font-bold text-on-surface italic px-8 py-4 bg-stone-50 rounded-lg">"OnlineFreeNovels is more than just a reading website — it's your key to exploring infinite worlds in the quickest and most optimal way possible."</p>
         </section>
     </article>
 </main>

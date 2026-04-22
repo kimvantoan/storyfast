@@ -1,6 +1,36 @@
 @extends('layouts.app')
 
-@section('title', '- ' . $chapter->title)
+@section('title', '- ' . $chapter->title . ' - ' . $story->title)
+@section('meta_title', 'Chapter ' . $chapter->order_index . ': ' . $chapter->title . ' - ' . $story->title . ' | OnlineFreeNovels')
+@section('meta_description', Str::limit(strip_tags($chapter->content), 150))
+@section('meta_type', 'article')
+@section('meta_image', $story->cover_image ? url(Storage::url($story->cover_image)) : asset('storyfast-icon.svg'))
+
+@section('structured_data')
+<script type="application/ld+json">
+{
+  "@@context": "https://schema.org",
+  "@@type": "Article",
+  "name": "{{ $chapter->title }}",
+  "headline": "{{ $chapter->title }}",
+  "articleSection": "Chapter {{ $chapter->order_index }}",
+  "articleBody": "{{ str_replace('\"', '\\\"', Str::limit(strip_tags($chapter->content), 200)) }}",
+  "url": "{{ request()->url() }}",
+  "publisher": {
+    "@@type": "Organization",
+    "name": "OnlineFreeNovels"
+  },
+  "isPartOf": {
+    "@@type": "Book",
+    "name": "{{ str_replace('\"', '\\\"', $story->title) }}",
+    "author": {
+      "@@type": "Person",
+      "name": "{{ str_replace('\"', '\\\"', $story->author) }}"
+    }
+  }
+}
+</script>
+@endsection
 
 @section('main_class', 'min-h-screen pt-12 pb-48 flex flex-col items-center')
 

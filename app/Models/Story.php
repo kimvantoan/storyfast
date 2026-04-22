@@ -26,4 +26,14 @@ class Story extends Model
     {
         return $this->hasMany(Chapter::class);
     }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->whereNull('parent_id')->orderBy('created_at', 'desc');
+    }
 }

@@ -25,7 +25,7 @@ class HomeController extends Controller
                                            }])
                                            ->with(['categories'])
                                            ->orderBy('updated_at', 'desc')
-                                           ->take(5)
+                                           ->take(15)
                                            ->get();
 
         // 3. Hot Rankings (3 stories ordered by views)

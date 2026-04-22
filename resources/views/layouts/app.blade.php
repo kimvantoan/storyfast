@@ -3,8 +3,30 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Silent Narrative @yield('title')</title>
-
+    <title>
+        @if(View::hasSection('meta_title'))
+            @yield('meta_title')
+        @else
+            OnlineFreeNovels @yield('title')
+        @endif
+    </title>
+    <meta name="description" content="@yield('meta_description', 'Read the best free novels online at OnlineFreeNovels. Discover top-tier literature, web novels, and light novels updated daily.')">
+    <link rel="canonical" href="@yield('meta_canonical', request()->url())">
+    
+    <!-- Open Graph for Facebook/Zalo -->
+    <meta property="og:type" content="@yield('meta_type', 'website')">
+    <meta property="og:url" content="@yield('meta_canonical', request()->url())">
+    <meta property="og:title" content="@yield('meta_title', 'OnlineFreeNovels')">
+    <meta property="og:description" content="@yield('meta_description', 'Read the best free novels online at OnlineFreeNovels. Discover top-tier literature, web novels, and light novels updated daily.')">
+    <meta property="og:image" content="@yield('meta_image', asset('storyfast-icon.svg'))">
+    
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('meta_title', 'OnlineFreeNovels')">
+    <meta name="twitter:description" content="@yield('meta_description', 'Read the best free novels online at OnlineFreeNovels. Discover top-tier literature, web novels, and light novels updated daily.')">
+    <meta name="twitter:image" content="@yield('meta_image', asset('storyfast-icon.svg'))">
+    
+    @yield('structured_data')
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

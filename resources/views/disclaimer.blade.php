@@ -10,7 +10,7 @@
 
     <article class="space-y-12 text-lg text-secondary">
         <section>
-            <p>Welcome to <strong>StoryFast</strong>, proudly operated by <strong>Kolsup Limited</strong>. All information provided on this website is strictly for general informational and entertainment purposes only.</p>
+            <p>Welcome to <strong>OnlineFreeNovels</strong>, proudly operated by <strong>Kolsup Limited</strong>. All information provided on this website is strictly for general informational and entertainment purposes only.</p>
         </section>
 
         <section>

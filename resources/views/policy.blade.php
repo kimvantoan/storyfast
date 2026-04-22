@@ -10,14 +10,14 @@
 
     <article class="space-y-12 text-lg text-secondary">
         <section>
-            <p><strong>StoryFast</strong> (developed by Kolsup Limited) is committed to protecting the privacy and personal information of our users when accessing and using our digital reading platform. This policy explains how we collect, use, and safeguard your information.</p>
+            <p><strong>OnlineFreeNovels</strong> (developed by Kolsup Limited) is committed to protecting the privacy and personal information of our users when accessing and using our digital reading platform. This policy explains how we collect, use, and safeguard your information.</p>
         </section>
 
         <section>
             <h2 class="font-headline font-bold text-2xl text-on-surface mb-4">
                 1. Information We Collect
             </h2>
-            <p class="mb-4">We may collect the following types of information when you interact with StoryFast:</p>
+            <p class="mb-4">We may collect the following types of information when you interact with OnlineFreeNovels:</p>
             <div class="space-y-4">
                 <div class="bg-surface-container-low p-6 rounded-lg border border-stone-100">
                     <h3 class="font-bold text-on-surface mb-2">Personal Information</h3>
@@ -56,7 +56,7 @@
             <h2 class="font-headline font-bold text-2xl text-on-surface mb-4">
                 3. Information Sharing
             </h2>
-            <p class="mb-4">StoryFast may share your information only in specific circumstances:</p>
+            <p class="mb-4">OnlineFreeNovels may share your information only in specific circumstances:</p>
             <ul class="list-disc pl-6 space-y-2 marker:text-[#a53600] mb-4">
                 <li>With trusted service providers (e.g., authentication services like Google Login) to facilitate platform functions.</li>
                 <li>When formally requested by competent authorities under applicable law.</li>
@@ -82,7 +82,7 @@
             <h2 class="font-headline font-bold text-2xl text-on-surface mb-4">
                 5. Cookies & Tracking Technologies
             </h2>
-            <p class="mb-4">StoryFast uses cookies to:</p>
+            <p class="mb-4">OnlineFreeNovels uses cookies to:</p>
             <ul class="list-disc pl-6 space-y-2 marker:text-[#a53600] mb-4">
                 <li>Remember your reading preferences (e.g., font sizes, dark mode).</li>
                 <li>Analyze traffic behavior to improve page load speeds.</li>
@@ -95,7 +95,7 @@
             <h2 class="font-headline font-bold text-2xl text-on-surface mb-4">
                 6. User Rights
             </h2>
-            <p class="mb-4">As a reader and user of StoryFast, you have the right to:</p>
+            <p class="mb-4">As a reader and user of OnlineFreeNovels, you have the right to:</p>
             <ul class="list-disc pl-6 space-y-2 marker:text-[#a53600]">
                 <li>Request access to, modify, or permanently delete your personal information.</li>
                 <li>Decline receiving marketing emails or newsletters.</li>
@@ -120,7 +120,7 @@
                 Hotline: (+852) 5170 7620
             </div>
             <p class="text-xs font-medium text-stone-500 uppercase tracking-widest border-t border-stone-200 pt-4">
-                Continuing to use StoryFast signals that you have read, understood, and agreed to this Privacy Policy.
+                Continuing to use OnlineFreeNovels signals that you have read, understood, and agreed to this Privacy Policy.
             </p>
         </section>
     </article>
