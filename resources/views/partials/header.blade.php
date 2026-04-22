@@ -41,7 +41,7 @@
             </form>
 
             <!-- Mobile Search Icon -->
-            <span class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors text-[20px] lg:hidden" title="Search">search</span>
+            <a href="{{ url('/search') }}" class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors text-[22px] lg:hidden flex items-center" title="Search">search</a>
 
             @guest
             <button onclick="document.getElementById('loginModal').classList.remove('hidden')" class="bg-primary text-on-primary px-4 py-1.5 md:px-5 md:py-2 rounded-[6px] font-headline text-xs md:text-sm font-bold tracking-tight active:scale-[0.98] transition-all">Login</button>
