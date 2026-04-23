@@ -6,13 +6,13 @@
 
 @section('structured_data')
 <script type="application/ld+json">
-{
-  "@@context": "https://schema.org",
-  "@@type": "WebSite",
-  "name": "OnlineFreeNovels",
-  "url": "{{ url('/') }}",
-  "description": "Read the best free novels online."
-}
+    {
+        "@@context": "https://schema.org",
+        "@@type": "WebSite",
+        "name": "OnlineFreeNovels",
+        "url": "{{ url('/') }}",
+        "description": "Read the best free novels online."
+    }
 </script>
 @endsection
 
@@ -76,10 +76,7 @@
                     <div class="w-full h-full flex items-center justify-center bg-stone-100 text-stone-400 font-headline">No Cover</div>
                     @endif
                 </div>
-                <h3 class="font-headline font-bold text-base text-on-surface mb-1 group-hover:text-primary transition-colors truncate">{{ $story->title }}</h3>
-                <div class="flex justify-between items-center">
-                    <span class="text-xs text-secondary font-medium">Chapter {{ $story->chapters_count ?? 0 }}</span>
-                </div>
+                <h3 class="font-headline  text-base text-on-surface mb-1 group-hover:text-primary transition-colors truncate">{{ $story->title }}</h3>
             </div>
             @empty
             <p class="text-secondary col-span-full">No updates found.</p>
