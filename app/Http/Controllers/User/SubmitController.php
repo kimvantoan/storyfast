@@ -42,7 +42,7 @@ class SubmitController extends Controller
         $story = Story::create([
             'user_id' => auth()->id(),
             'title' => $request->title,
-            'slug' => Str::slug($request->title) . '-' . uniqid(),
+            'slug' => Str::slug($request->title),
             'author' => $request->author,
             'description' => $request->description,
             'status' => $request->status,

@@ -76,7 +76,7 @@ class StoryController extends Controller
         $story = Story::create([
             'user_id' => auth()->id(),
             'title' => $request->title,
-            'slug' => Str::slug($request->title) . '-' . uniqid(), // simple avoiding collision
+            'slug' => Str::slug($request->title), // removed uniqid for cleaner urls
             'author' => $request->author,
             'description' => $request->description,
             'status' => $request->status,
