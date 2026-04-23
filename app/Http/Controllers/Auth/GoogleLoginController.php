@@ -21,14 +21,13 @@ class GoogleLoginController extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
             
-            // Find existing user or create a new one
+            // Find existing user by email or create a new one
             $user = User::updateOrCreate(
                 [
-                    'google_id' => $googleUser->id,
+                    'email' => $googleUser->email,
                 ],
                 [
                     'name' => $googleUser->name,
-                    'email' => $googleUser->email,
                     'avatar' => $googleUser->avatar,
                     'google_id' => $googleUser->id,
                 ]

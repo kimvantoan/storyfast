@@ -7,7 +7,7 @@
             </button>
 
             <a href="{{ url('/') }}" class="flex items-center">
-                <img src="{{ asset('storyfast-wordmark.png') }}" alt="OnlineFreeNovels" class="h-10 md:h-12 w-auto">
+                <img src="{{ asset('storyfast-wordmark.png') }}" alt="OnlineFreeNovels" class="h-20 md:h-20 w-auto">
             </a>
         </div>
         <div class="hidden md:flex items-center space-x-10 font-['Inter'] font-medium text-sm tracking-tight leading-relaxed">
@@ -191,7 +191,7 @@
     function toggleMobileCategories() {
         const list = document.getElementById('mobileCategoriesList');
         const icon = document.getElementById('mobileCatIcon');
-        
+
         list.classList.toggle('grid-rows-[1fr]');
         list.classList.toggle('grid-rows-[0fr]');
         icon.classList.toggle('rotate-180');
